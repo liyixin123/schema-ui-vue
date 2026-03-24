@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Server Configuration",
+  "description": "Configure server and application settings",
+  "type": "object",
+  "required": ["serverName", "port", "enableSSL"],
+  "properties": {
+    "serverName": {
+      "type": "string",
+      "title": "Server Name",
+      "description": "The name identifier for this server",
+      "default": "my-server"
+    },
+    "port": {
+      "type": "integer",
+      "title": "Port Number",
+      "description": "The port the server listens on",
+      "default": 8080,
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "enableSSL": {
+      "type": "boolean",
+      "title": "Enable SSL",
+      "description": "Whether to enable SSL/TLS encryption",
+      "default": false
+    },
+    "environment": {
+      "type": "string",
+      "title": "Environment",
+      "description": "Deployment environment",
+      "enum": ["development", "staging", "production"],
+      "default": "development"
+    },
+    "logLevel": {
+      "type": "string",
+      "title": "Log Level",
+      "enum": ["debug", "info", "warn", "error"],
+      "default": "info"
+    },
+    "allowedHosts": {
+      "type": "array",
+      "title": "Allowed Hosts",
+      "description": "List of hostnames or IPs allowed to connect",
+      "items": { "type": "string" },
+      "default": ["localhost", "127.0.0.1"]
+    },
+    "allowedPorts": {
+      "type": "array",
+      "title": "Allowed Ports",
+      "description": "Additional ports to open (integers)",
+      "items": { "type": "integer" },
+      "default": [3000, 4000]
+    },
+    "notes": {
+      "type": "string",
+      "title": "Notes",
+      "description": "Additional configuration notes",
+      "format": "textarea"
+    },
+    "database": {
+      "type": "object",
+      "title": "Database Settings",
+      "description": "Database connection configuration",
+      "properties": {
+        "host": {
+          "type": "string",
+          "title": "Host",
+          "default": "localhost"
+        },
+        "dbPort": {
+          "type": "integer",
+          "title": "DB Port",
+          "default": 5432
+        },
+        "name": {
+          "type": "string",
+          "title": "Database Name",
+          "default": "mydb"
+        },
+        "enablePooling": {
+          "type": "boolean",
+          "title": "Enable Connection Pooling",
+          "default": true
+        },
+        "replicaHosts": {
+          "type": "array",
+          "title": "Replica Hosts",
+          "description": "Read replica hostnames",
+          "items": { "type": "string" },
+          "default": []
+        }
+      }
+    }
+  }
+}
