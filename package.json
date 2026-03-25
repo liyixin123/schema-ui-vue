@@ -30,7 +30,7 @@
       "require": "./dist-lib/schema-ui-vue.cjs",
       "types": "./dist-lib/types/index.d.ts"
     },
-    "./style.css": "./dist-lib/style.css"
+    "./style.css": "./dist-lib/schema-ui-vue.css"
   },
   "files": [
     "dist-lib"

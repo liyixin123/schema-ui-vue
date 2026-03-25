@@ -24,6 +24,7 @@ npm install schema-ui-vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import { AutoConfigForm } from 'schema-ui-vue'
+import 'schema-ui-vue/style.css'
 
 const schema = {
   type: 'object',
