@@ -1,6 +1,6 @@
 {
   "name": "schema-ui-vue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "JSON Schema driven form generator for Vue 3. Pass a schema, get a form.",
   "keywords": [
     "vue",
