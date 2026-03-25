@@ -2,9 +2,9 @@
 
 > JSON Schema → Vue 表单，自动生成配置界面。
 
-[![CI](https://github.com/your-username/schema-ui-vue/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/schema-ui-vue/actions)
+[![CI](https://github.com/liyixin123/schema-ui-vue/actions/workflows/ci.yml/badge.svg)](https://github.com/liyixin123/schema-ui-vue/actions)
 [![npm](https://img.shields.io/npm/v/schema-ui-vue)](https://www.npmjs.com/package/schema-ui-vue)
-[![license](https://img.shields.io/github/license/your-username/schema-ui-vue)](./LICENSE)
+[![license](https://img.shields.io/github/license/liyixin123/schema-ui-vue)](./LICENSE)
 
 传入一个 JSON Schema，自动渲染对应的表单控件（文本框、数字输入、复选框、下拉框、文本域、数组列表）。支持嵌套对象、实时验证、多列布局，可嵌入任意 Vue 3 页面。
 
@@ -169,7 +169,7 @@ import type {
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-username/schema-ui-vue.git
+git clone https://github.com/liyixin123/schema-ui-vue.git
 cd schema-ui-vue
 npm install
 

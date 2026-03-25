@@ -2,16 +2,23 @@
   "name": "schema-ui-vue",
   "version": "0.1.0",
   "description": "JSON Schema driven form generator for Vue 3. Pass a schema, get a form.",
-  "keywords": ["vue", "vue3", "form", "json-schema", "form-generator", "configuration"],
+  "keywords": [
+    "vue",
+    "vue3",
+    "form",
+    "json-schema",
+    "form-generator",
+    "configuration"
+  ],
   "author": "your-name",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/schema-ui-vue.git"
+    "url": "https://github.com/liyixin123/schema-ui-vue.git"
   },
-  "homepage": "https://github.com/your-username/schema-ui-vue#readme",
+  "homepage": "https://github.com/liyixin123/schema-ui-vue#readme",
   "bugs": {
-    "url": "https://github.com/your-username/schema-ui-vue/issues"
+    "url": "https://github.com/liyixin123/schema-ui-vue/issues"
   },
   "type": "module",
   "main": "./dist-lib/schema-ui-vue.cjs",
@@ -25,7 +32,9 @@
     },
     "./style.css": "./dist-lib/style.css"
   },
-  "files": ["dist-lib"],
+  "files": [
+    "dist-lib"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
