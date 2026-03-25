@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import AutoConfigForm from './components/AutoConfigForm.vue'
+import { AutoConfigForm } from 'schema-ui-vue'
 
 const config = ref<Record<string, unknown>>({})
 </script>
@@ -31,6 +31,10 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #f7f8fa;
   min-height: 100vh;
+}
+
+@media (prefers-color-scheme: dark) {
+  body { background: #0f1117; }
 }
 
 .demo-app {
@@ -45,6 +49,13 @@ body {
   padding: 16px 24px;
 }
 
+@media (prefers-color-scheme: dark) {
+  .demo-header {
+    background: #1e2130;
+    border-bottom-color: #374151;
+  }
+}
+
 .demo-title {
   font-size: 20px;
   font-weight: 800;
@@ -56,6 +67,11 @@ body {
   font-size: 13px;
   color: #718096;
   margin-top: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .demo-title { color: #f1f5f9; }
+  .demo-subtitle { color: #94a3b8; }
 }
 
 .demo-main {

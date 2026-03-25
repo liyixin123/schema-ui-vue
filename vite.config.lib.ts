@@ -7,9 +7,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'AutoConfig',
+      name: 'SchemaUiVue',
       formats: ['es', 'cjs'],
-      fileName: (format) => `auto-config.${format === 'es' ? 'mjs' : 'cjs'}`,
+      fileName: (format) => `schema-ui-vue.${format === 'es' ? 'mjs' : 'cjs'}`,
     },
     rollupOptions: {
       // vue is a peer dependency — don't bundle it

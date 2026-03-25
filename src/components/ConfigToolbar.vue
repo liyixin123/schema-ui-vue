@@ -87,13 +87,13 @@ defineEmits<{
 }
 
 .badge-valid {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .badge-invalid {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text-strong);
 }
 
 .toolbar-actions {

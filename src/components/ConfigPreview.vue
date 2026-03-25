@@ -75,9 +75,9 @@ async function copyToClipboard(): Promise<void> {
 }
 
 .copy-btn.copied {
-  background: #d1fae5;
-  border-color: #10b981;
-  color: #065f46;
+  background: var(--color-success-bg);
+  border-color: var(--color-success-border);
+  color: var(--color-success-text);
 }
 
 .preview-code {

@@ -1,5 +1,5 @@
 {
-  "name": "auto-config",
+  "name": "schema-ui-vue",
   "version": "0.1.0",
   "description": "JSON Schema driven form generator for Vue 3. Pass a schema, get a form.",
   "keywords": ["vue", "vue3", "form", "json-schema", "form-generator", "configuration"],
@@ -7,20 +7,20 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/auto-config.git"
+    "url": "https://github.com/your-username/schema-ui-vue.git"
   },
-  "homepage": "https://github.com/your-username/auto-config#readme",
+  "homepage": "https://github.com/your-username/schema-ui-vue#readme",
   "bugs": {
-    "url": "https://github.com/your-username/auto-config/issues"
+    "url": "https://github.com/your-username/schema-ui-vue/issues"
   },
   "type": "module",
-  "main": "./dist-lib/auto-config.cjs",
-  "module": "./dist-lib/auto-config.mjs",
+  "main": "./dist-lib/schema-ui-vue.cjs",
+  "module": "./dist-lib/schema-ui-vue.mjs",
   "types": "./dist-lib/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist-lib/auto-config.mjs",
-      "require": "./dist-lib/auto-config.cjs",
+      "import": "./dist-lib/schema-ui-vue.mjs",
+      "require": "./dist-lib/schema-ui-vue.cjs",
       "types": "./dist-lib/types/index.d.ts"
     },
     "./style.css": "./dist-lib/style.css"

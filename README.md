@@ -1,10 +1,10 @@
-# auto-config
+# schema-ui-vue
 
 > JSON Schema → Vue 表单，自动生成配置界面。
 
-[![CI](https://github.com/your-username/auto-config/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/auto-config/actions)
-[![npm](https://img.shields.io/npm/v/auto-config)](https://www.npmjs.com/package/auto-config)
-[![license](https://img.shields.io/github/license/your-username/auto-config)](./LICENSE)
+[![CI](https://github.com/your-username/schema-ui-vue/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/schema-ui-vue/actions)
+[![npm](https://img.shields.io/npm/v/schema-ui-vue)](https://www.npmjs.com/package/schema-ui-vue)
+[![license](https://img.shields.io/github/license/your-username/schema-ui-vue)](./LICENSE)
 
 传入一个 JSON Schema，自动渲染对应的表单控件（文本框、数字输入、复选框、下拉框、文本域、数组列表）。支持嵌套对象、实时验证、多列布局，可嵌入任意 Vue 3 页面。
 
@@ -13,7 +13,7 @@
 ## 快速开始
 
 ```bash
-npm install auto-config
+npm install schema-ui-vue
 ```
 
 ```vue
@@ -23,8 +23,7 @@ npm install auto-config
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { AutoConfigForm } from 'auto-config'
-import 'auto-config/style.css'
+import { AutoConfigForm } from 'schema-ui-vue'
 
 const schema = {
   type: 'object',
@@ -161,7 +160,7 @@ import type {
   ValidationResult,     // { valid: boolean; errors: ValidationError[] }
   ValidationError,      // { path: string; message: string }
   ControlType,          // 'text' | 'number' | 'checkbox' | 'select' | 'textarea' | 'array' | 'group'
-} from 'auto-config'
+} from 'schema-ui-vue'
 ```
 
 ---
@@ -170,8 +169,8 @@ import type {
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-username/auto-config.git
-cd auto-config
+git clone https://github.com/your-username/schema-ui-vue.git
+cd schema-ui-vue
 npm install
 
 npm run dev            # 启动 demo 开发服务器
