@@ -1,0 +1,10 @@
+import type { Component } from 'vue';
+import type { ControlType } from '../../types/form';
+import TextInput from './TextInput.vue';
+import NumberInput from './NumberInput.vue';
+import CheckboxInput from './CheckboxInput.vue';
+import SelectInput from './SelectInput.vue';
+import TextareaInput from './TextareaInput.vue';
+import ArrayInput from './ArrayInput.vue';
+export declare const controlRegistry: Record<Exclude<ControlType, 'group'>, Component>;
+export { TextInput, NumberInput, CheckboxInput, SelectInput, TextareaInput, ArrayInput };
