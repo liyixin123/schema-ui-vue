@@ -5,6 +5,7 @@ import SelectInput from '../components/controls/SelectInput.vue'
 import TextareaInput from '../components/controls/TextareaInput.vue'
 import CheckboxInput from '../components/controls/CheckboxInput.vue'
 import NumberInput from '../components/controls/NumberInput.vue'
+import TextInput from '../components/controls/TextInput.vue'
 
 // ── ArrayInput ────────────────────────────────────────────────
 
@@ -149,5 +150,41 @@ describe('NumberInput', () => {
   it('applies has-error class', () => {
     const wrapper = mount(NumberInput, { props: { modelValue: 0, hasError: true } })
     expect(wrapper.find('input').classes()).toContain('has-error')
+  })
+})
+
+// ── readonly prop ──────────────────────────────────────────────
+
+describe('readonly prop on controls', () => {
+  it('TextInput is disabled when readonly=true', () => {
+    const wrapper = mount(TextInput, { props: { modelValue: 'hello', readonly: true } })
+    expect(wrapper.find('input').attributes('disabled')).toBeDefined()
+  })
+
+  it('TextInput is not disabled when readonly=false', () => {
+    const wrapper = mount(TextInput, { props: { modelValue: 'hello', readonly: false } })
+    expect(wrapper.find('input').attributes('disabled')).toBeUndefined()
+  })
+
+  it('NumberInput is disabled when readonly=true', () => {
+    const wrapper = mount(NumberInput, { props: { modelValue: 0, readonly: true } })
+    expect(wrapper.find('input').attributes('disabled')).toBeDefined()
+  })
+
+  it('SelectInput is disabled when readonly=true', () => {
+    const wrapper = mount(SelectInput, {
+      props: { modelValue: 'a', options: [{ label: 'A', value: 'a' }], readonly: true },
+    })
+    expect(wrapper.find('select').attributes('disabled')).toBeDefined()
+  })
+
+  it('TextareaInput is disabled when readonly=true', () => {
+    const wrapper = mount(TextareaInput, { props: { modelValue: 'txt', readonly: true } })
+    expect(wrapper.find('textarea').attributes('disabled')).toBeDefined()
+  })
+
+  it('CheckboxInput is disabled when readonly=true', () => {
+    const wrapper = mount(CheckboxInput, { props: { modelValue: true, readonly: true } })
+    expect(wrapper.find('input[type="checkbox"]').attributes('disabled')).toBeDefined()
   })
 })

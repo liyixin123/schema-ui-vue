@@ -27,6 +27,7 @@
             :item-schema="field.itemSchema"
             :has-error="fieldErrors(field.path).length > 0"
             :label="field.label"
+            :readonly="field.readonly"
             @update:model-value="onFieldUpdate(field.path, $event)"
           />
         </FieldWrapper>
@@ -50,7 +51,8 @@
             :label="field.label"
             :input-id="field.path"
             :item-type="field.itemType"
-            @update:model-value="onFieldUpdate(field.path, $event)"
+            :readonly="field.readonly"
+            @update:model-value="field.readonly ? undefined : onFieldUpdate(field.path, $event)"
           />
         </FieldWrapper>
       </div>

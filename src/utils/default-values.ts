@@ -53,3 +53,28 @@ function getDescriptorDefault(field: FormFieldDescriptor): ConfigValue | unknown
     default: return ''
   }
 }
+
+/**
+ * Returns a new config object with all readonly field paths removed.
+ * Used to ensure v-model and exports never include readonly data.
+ */
+export function stripReadonlyPaths(
+  config: Record<string, unknown>,
+  fields: FormFieldDescriptor[],
+): Record<string, unknown> {
+  return fields.reduce<Record<string, unknown>>((acc, field) => {
+    if (field.readonly) return acc  // drop entire readonly subtree
+    if (field.controlType === 'group' && field.children) {
+      const nested = config[field.key]
+      const stripped = stripReadonlyPaths(
+        (nested as Record<string, unknown>) ?? {},
+        field.children,
+      )
+      return { ...acc, [field.key]: stripped }
+    }
+    if (field.key in config) {
+      return { ...acc, [field.key]: config[field.key] }
+    }
+    return acc
+  }, {})
+}

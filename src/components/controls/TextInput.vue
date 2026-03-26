@@ -7,6 +7,7 @@
     :placeholder="placeholder"
     :minlength="minLength"
     :maxlength="maxLength"
+    :disabled="readonly"
     @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
   />
 </template>
@@ -18,6 +19,7 @@ defineProps<{
   placeholder?: string
   minLength?: number
   maxLength?: number
+  readonly?: boolean
 }>()
 
 defineEmits<{

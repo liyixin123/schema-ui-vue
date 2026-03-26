@@ -16,6 +16,7 @@
         </span>
         <span class="obj-array-item-title">{{ getItemTitle(item, index) }}</span>
         <button
+          v-if="!readonly"
           class="obj-array-delete-btn"
           type="button"
           :aria-label="`删除第 ${index + 1} 项`"
@@ -35,7 +36,7 @@
       </div>
     </div>
 
-    <button class="obj-array-add-btn" type="button" @click="addItem">
+    <button v-if="!readonly" class="obj-array-add-btn" type="button" @click="addItem">
       + 添加项
     </button>
   </div>
@@ -54,6 +55,7 @@ const props = withDefaults(
     itemSchema?: FormFieldDescriptor[]
     hasError?: boolean
     label?: string
+    readonly?: boolean
   }>(),
   { modelValue: () => [], itemSchema: () => [] },
 )

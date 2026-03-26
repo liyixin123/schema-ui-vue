@@ -19,7 +19,7 @@
           <AlgorithmLayout
             v-if="props.layoutMode === 'algorithm'"
             :fields="fields"
-            :config="internalConfig"
+            :config="displayConfig"
             :errors="validationResult?.errors"
             :columns="internalColumns"
             @update="handleFieldUpdate"
@@ -27,7 +27,7 @@
           <FormRenderer
             v-else
             :fields="fields"
-            :config="internalConfig"
+            :config="displayConfig"
             :errors="validationResult?.errors"
             :columns="internalColumns"
             @update="handleFieldUpdate"
@@ -52,6 +52,8 @@ import { parseSchema } from '../utils/schema-parser'
 import { useFormState } from '../composables/useFormState'
 import { useValidation } from '../composables/useValidation'
 import { downloadJson } from '../utils/file-io'
+import { deepMerge } from '../utils/deep-clone'
+import { stripReadonlyPaths } from '../utils/default-values'
 import FormRenderer from './FormRenderer.vue'
 import AlgorithmLayout from './AlgorithmLayout.vue'
 import ConfigToolbar from './ConfigToolbar.vue'
@@ -69,6 +71,7 @@ const props = withDefaults(
     showToolbar?: boolean
     showPreview?: boolean
     layoutMode?: LayoutMode
+    readonlyData?: Record<string, unknown>
   }>(),
   {
     columns: 2,
@@ -94,6 +97,11 @@ const { result: validationResult, validate, clearErrors } = useValidation()
 // The schema that is actually in use (prop takes priority over fetched)
 const effectiveSchema = computed<JsonSchema | null>(() =>
   props.schema ?? fetchedSchema.value,
+)
+
+// Merge editable config with readonly data for display only
+const displayConfig = computed(() =>
+  deepMerge(internalConfig.value, props.readonlyData),
 )
 
 // ── Schema initialization ─────────────────────────────────────
@@ -149,14 +157,16 @@ watch(
   { deep: true },
 )
 
-// When internal config changes (user edits), propagate to parent.
+// When internal config changes (user edits), propagate to parent (readonly fields excluded).
 watch(internalConfig, (val) => {
-  emit('update:modelValue', val)
+  emit('update:modelValue', stripReadonlyPaths(val, fields.value))
 })
 
 // ── Field update handler ──────────────────────────────────────
 
 function handleFieldUpdate(payload: { path: string; value: unknown }): void {
+  // Readonly fields should not trigger state updates; FormRenderer already
+  // guards against this, but we double-check here at the orchestrator level.
   setValue(payload.path, payload.value)
 }
 
@@ -177,7 +187,8 @@ function handleReset(): void {
 
 function handleExport(): void {
   const title = effectiveSchema.value?.title ?? 'config'
-  downloadJson(internalConfig.value, `${title}.json`)
+  const exportData = stripReadonlyPaths(internalConfig.value, fields.value)
+  downloadJson(exportData, `${title}.json`)
 }
 
 // ── Exposed methods ───────────────────────────────────────────

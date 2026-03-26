@@ -12,7 +12,12 @@
 
     <!-- depth-1 分组字段：多列布局 -->
     <div v-if="groupChildren.length > 0" class="algo-columns" :style="{ '--algo-cols': columnCount }">
-      <div v-for="child in groupChildren" :key="child.path" class="algo-column">
+      <div
+        v-for="child in groupChildren"
+        :key="child.path"
+        class="algo-column"
+        :class="{ 'algo-column--readonly': child.readonly }"
+      >
         <FieldGroup
           :label="child.label"
           :description="child.description"
@@ -20,7 +25,7 @@
           :config="getChildConfig(child.key)"
           :columns="1"
           :collapsible="true"
-          @update="onNestedUpdate(child.key, $event)"
+          @update="child.readonly ? undefined : onNestedUpdate(child.key, $event)"
         />
       </div>
     </div>

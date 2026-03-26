@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { deepClone, setNestedValue, getNestedValue } from '../utils/deep-clone'
+import { deepClone, setNestedValue, getNestedValue, deepMerge } from '../utils/deep-clone'
 
 describe('deepClone', () => {
   it('clones primitives', () => {
@@ -70,5 +70,43 @@ describe('getNestedValue', () => {
   it('returns the object itself for empty path', () => {
     const obj = { a: 1 }
     expect(getNestedValue(obj, '')).toBe(obj)
+  })
+})
+
+describe('deepMerge', () => {
+  it('returns a clone when source is undefined', () => {
+    const target = { a: 1 }
+    const result = deepMerge(target, undefined)
+    expect(result).toEqual({ a: 1 })
+    expect(result).not.toBe(target)
+  })
+
+  it('source values overwrite target values', () => {
+    const result = deepMerge({ a: 1, b: 2 }, { b: 99 })
+    expect(result).toEqual({ a: 1, b: 99 })
+  })
+
+  it('merges nested objects recursively', () => {
+    const result = deepMerge(
+      { db: { host: 'localhost', port: 5432 } },
+      { db: { port: 9999 } },
+    )
+    expect(result).toEqual({ db: { host: 'localhost', port: 9999 } })
+  })
+
+  it('adds new keys from source', () => {
+    const result = deepMerge({ a: 1 }, { b: 2 })
+    expect(result).toEqual({ a: 1, b: 2 })
+  })
+
+  it('does not mutate the original target', () => {
+    const target = { x: 1 }
+    deepMerge(target, { x: 2 })
+    expect(target.x).toBe(1)
+  })
+
+  it('replaces arrays rather than merging them', () => {
+    const result = deepMerge({ arr: [1, 2, 3] }, { arr: [4, 5] })
+    expect(result.arr).toEqual([4, 5])
   })
 })

@@ -39,9 +39,11 @@ function parseField(
   parentPath: string,
   required: boolean,
   depth: number,
+  inheritedReadonly = false,
 ): FormFieldDescriptor {
   const path = parentPath ? `${parentPath}.${key}` : key
   const controlType = resolveControlType(schema)
+  const isReadonly = inheritedReadonly || schema['x-readonly'] === true
 
   const descriptor: FormFieldDescriptor = {
     key,
@@ -58,10 +60,18 @@ function parseField(
     maxLength: schema.maxLength,
     itemType: resolveItemType(schema),
     depth,
+    readonly: isReadonly || undefined,
+    column: schema['x-column'],
   }
 
   if (controlType === 'group' && schema.properties) {
-    descriptor.children = parseProperties(schema.properties, schema.required ?? [], path, depth + 1)
+    descriptor.children = parseProperties(
+      schema.properties,
+      schema.required ?? [],
+      path,
+      depth + 1,
+      isReadonly,
+    )
   }
 
   if (controlType === 'object-array' && schema.items?.properties) {
@@ -70,6 +80,7 @@ function parseField(
       schema.items.required ?? [],
       '',
       0,
+      isReadonly,
     )
   }
 
@@ -81,9 +92,10 @@ function parseProperties(
   required: string[],
   parentPath: string,
   depth: number,
+  inheritedReadonly = false,
 ): FormFieldDescriptor[] {
   return Object.entries(properties).map(([key, fieldSchema]) =>
-    parseField(key, fieldSchema, parentPath, required.includes(key), depth),
+    parseField(key, fieldSchema, parentPath, required.includes(key), depth, inheritedReadonly),
   )
 }
 

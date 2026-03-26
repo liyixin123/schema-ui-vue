@@ -245,4 +245,57 @@ describe('parseSchema', () => {
     const fields = parseSchema(schema)
     expect(fields[0].controlType).toBe('array')
   })
+
+  it('parses x-readonly on a field', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        result: { type: 'object', 'x-readonly': true, properties: { val: { type: 'number' } } },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].readonly).toBe(true)
+  })
+
+  it('propagates x-readonly to children', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        result: {
+          type: 'object',
+          'x-readonly': true,
+          properties: {
+            val: { type: 'number' },
+            nested: { type: 'object', properties: { x: { type: 'string' } } },
+          },
+        },
+      },
+    }
+    const fields = parseSchema(schema)
+    const result = fields[0]
+    expect(result.readonly).toBe(true)
+    expect(result.children![0].readonly).toBe(true)   // val
+    expect(result.children![1].readonly).toBe(true)   // nested
+    expect(result.children![1].children![0].readonly).toBe(true) // x
+  })
+
+  it('parses x-column on a field', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        detection: { type: 'object', 'x-column': 'detection', properties: {} },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].column).toBe('detection')
+  })
+
+  it('non-readonly fields have readonly undefined', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: { name: { type: 'string' } },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].readonly).toBeUndefined()
+  })
 })

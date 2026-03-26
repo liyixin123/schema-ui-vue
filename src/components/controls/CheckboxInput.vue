@@ -4,6 +4,7 @@
       type="checkbox"
       :id="inputId"
       :checked="modelValue"
+      :disabled="readonly"
       @change="$emit('update:modelValue', ($event.target as HTMLInputElement).checked)"
     />
     <label :for="inputId">{{ label }}</label>
@@ -17,6 +18,7 @@ const props = defineProps<{
   modelValue: boolean
   label?: string
   inputId?: string
+  readonly?: boolean
 }>()
 
 defineEmits<{

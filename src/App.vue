@@ -33,6 +33,7 @@
         :show-preview="layoutMode === 'default'"
         :columns="layoutMode === 'algorithm' ? 3 : 2"
         :layout-mode="layoutMode"
+        :readonly-data="readonlyData"
       />
     </main>
   </div>
@@ -50,6 +51,23 @@ const schemaUrl = computed(() =>
   layoutMode.value === 'algorithm'
     ? '/samples/algorithm-schema.json'
     : '/samples/example-schema.json',
+)
+
+// 模拟算法计算结果（实际应用中由外部 API 提供）
+const mockResults: Record<string, unknown> = {
+  length: {
+    result: { measuredValue: 99.97, deviation: -0.03, verdict: '合格' },
+  },
+  width: {
+    result: { measuredValue: 50.12, deviation: 0.12, verdict: '不合格' },
+  },
+  roundness: {
+    result: { roundnessError: 0.015, centerX: 320.5, centerY: 240.2, verdict: '合格' },
+  },
+}
+
+const readonlyData = computed(() =>
+  layoutMode.value === 'algorithm' ? mockResults : undefined,
 )
 
 function setMode(mode: LayoutMode): void {

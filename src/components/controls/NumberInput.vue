@@ -6,6 +6,7 @@
     :value="modelValue"
     :min="minimum"
     :max="maximum"
+    :disabled="readonly"
     @input="$emit('update:modelValue', parseFloat(($event.target as HTMLInputElement).value))"
   />
 </template>
@@ -16,6 +17,7 @@ defineProps<{
   hasError?: boolean
   minimum?: number
   maximum?: number
+  readonly?: boolean
 }>()
 
 defineEmits<{

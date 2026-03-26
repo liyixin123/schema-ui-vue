@@ -17,4 +17,6 @@ export interface JsonSchema {
   pattern?: string
   items?: JsonSchema
   additionalProperties?: boolean | JsonSchema
+  'x-readonly'?: boolean
+  'x-column'?: string
 }

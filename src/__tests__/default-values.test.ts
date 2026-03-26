@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { extractDefaults, buildDefaultFromDescriptors } from '../utils/default-values'
+import { extractDefaults, buildDefaultFromDescriptors, stripReadonlyPaths } from '../utils/default-values'
 import type { JsonSchema } from '../types/schema'
 import type { FormFieldDescriptor } from '../types/form'
 
@@ -142,5 +142,56 @@ describe('buildDefaultFromDescriptors', () => {
       },
     ]
     expect(buildDefaultFromDescriptors(fields)).toEqual({ db: { host: 'localhost', port: 5432 } })
+  })
+})
+
+describe('stripReadonlyPaths', () => {
+  it('removes top-level readonly fields', () => {
+    const config = { a: 1, b: 2 }
+    const fields: FormFieldDescriptor[] = [
+      { key: 'a', path: 'a', label: 'A', controlType: 'text', required: false },
+      { key: 'b', path: 'b', label: 'B', controlType: 'text', required: false, readonly: true },
+    ]
+    expect(stripReadonlyPaths(config, fields)).toEqual({ a: 1 })
+  })
+
+  it('removes nested readonly subtree entirely', () => {
+    const config = { editable: { x: 1 }, result: { val: 42 } }
+    const fields: FormFieldDescriptor[] = [
+      {
+        key: 'editable', path: 'editable', label: 'E', controlType: 'group', required: false,
+        children: [{ key: 'x', path: 'editable.x', label: 'X', controlType: 'number', required: false }],
+      },
+      {
+        key: 'result', path: 'result', label: 'R', controlType: 'group', required: false,
+        readonly: true,
+        children: [{ key: 'val', path: 'result.val', label: 'V', controlType: 'number', required: false, readonly: true }],
+      },
+    ]
+    expect(stripReadonlyPaths(config, fields)).toEqual({ editable: { x: 1 } })
+  })
+
+  it('strips only the readonly child within a group', () => {
+    const config = { grp: { keep: 'hello', drop: 99 } }
+    const fields: FormFieldDescriptor[] = [
+      {
+        key: 'grp', path: 'grp', label: 'G', controlType: 'group', required: false,
+        children: [
+          { key: 'keep', path: 'grp.keep', label: 'K', controlType: 'text', required: false },
+          { key: 'drop', path: 'grp.drop', label: 'D', controlType: 'number', required: false, readonly: true },
+        ],
+      },
+    ]
+    expect(stripReadonlyPaths(config, fields)).toEqual({ grp: { keep: 'hello' } })
+  })
+
+  it('does not mutate the original config', () => {
+    const config = { x: 1, y: 2 }
+    const fields: FormFieldDescriptor[] = [
+      { key: 'x', path: 'x', label: 'X', controlType: 'number', required: false },
+      { key: 'y', path: 'y', label: 'Y', controlType: 'number', required: false, readonly: true },
+    ]
+    stripReadonlyPaths(config, fields)
+    expect(config).toEqual({ x: 1, y: 2 })
   })
 })
