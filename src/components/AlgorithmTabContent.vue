@@ -4,10 +4,10 @@
     <FormRenderer
       v-if="nonGroupChildren.length > 0"
       :fields="nonGroupChildren"
-      :config="groupConfig"
+      :config="config"
       :errors="errors"
       :columns="2"
-      @update="onUpdate"
+      @update="$emit('update', $event)"
     />
 
     <!-- depth-1 分组字段：多列布局 -->
@@ -22,10 +22,11 @@
           :label="child.label"
           :description="child.description"
           :children="child.children ?? []"
-          :config="getChildConfig(child.key)"
+          :config="config"
           :columns="1"
           :collapsible="true"
-          @update="child.readonly ? undefined : onNestedUpdate(child.key, $event)"
+          :collapsible-groups="true"
+          @update="child.readonly ? undefined : $emit('update', $event)"
         />
       </div>
     </div>
@@ -49,16 +50,11 @@ const props = withDefaults(
   { columns: 3 },
 )
 
-const emit = defineEmits<{
+defineEmits<{
   update: [payload: { path: string; value: unknown }]
 }>()
 
 const columnCount = computed(() => props.columns)
-
-const groupConfig = computed<Record<string, unknown>>(() => {
-  const val = props.config[props.field.key]
-  return (val as Record<string, unknown>) ?? {}
-})
 
 const groupChildren = computed(() =>
   (props.field.children ?? []).filter(
@@ -71,19 +67,6 @@ const nonGroupChildren = computed(() =>
     (c) => c.controlType !== 'group',
   ),
 )
-
-function getChildConfig(key: string): Record<string, unknown> {
-  const val = groupConfig.value[key]
-  return (val as Record<string, unknown>) ?? {}
-}
-
-function onUpdate(event: { path: string; value: unknown }): void {
-  emit('update', { path: `${props.field.key}.${event.path}`, value: event.value })
-}
-
-function onNestedUpdate(childKey: string, event: { path: string; value: unknown }): void {
-  emit('update', { path: `${props.field.key}.${childKey}.${event.path}`, value: event.value })
-}
 </script>
 
 <style scoped>

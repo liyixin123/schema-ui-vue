@@ -30,7 +30,7 @@
         <FormRenderer
           :fields="itemSchema"
           :config="item"
-          :columns="2"
+          :columns="1"
           @update="onItemUpdate(index, $event)"
         />
       </div>
@@ -187,6 +187,8 @@ function onItemUpdate(index: number, event: { path: string; value: unknown }): v
 
 .obj-array-item-body {
   padding: 12px;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 .obj-array-add-btn {

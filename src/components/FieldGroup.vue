@@ -16,6 +16,7 @@
         :fields="children"
         :config="config"
         :columns="columns"
+        :collapsible-groups="collapsibleGroups"
         @update="$emit('update', $event)"
       />
     </div>
@@ -35,8 +36,9 @@ const props = withDefaults(
     config: Record<string, unknown>
     columns?: number
     collapsible?: boolean
+    collapsibleGroups?: boolean
   }>(),
-  { columns: 2, collapsible: false },
+  { columns: 2, collapsible: false, collapsibleGroups: false },
 )
 
 defineEmits<{
@@ -59,6 +61,8 @@ function toggle(): void {
   padding: 16px;
   margin-bottom: 16px;
   background: var(--color-surface-alt);
+  min-width: 0;
+  width: 100%;
 }
 
 .field-group-legend {

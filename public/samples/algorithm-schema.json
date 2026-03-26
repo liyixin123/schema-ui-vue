@@ -42,6 +42,64 @@
               "minimum": 1,
               "default": 480
             },
+            "label": {
+              "type": "string",
+              "title": "标签 (text)",
+              "description": "自定义标签，用于标注该测量项",
+              "default": "测量项A"
+            },
+            "remark": {
+              "type": "string",
+              "title": "备注 (textarea)",
+              "format": "textarea",
+              "description": "详细备注，支持多行文本",
+              "default": ""
+            },
+            "excludeAngles": {
+              "type": "array",
+              "title": "排除角度 (array<number>)",
+              "description": "检测时需跳过的角度（°）",
+              "items": {
+                "type": "number"
+              },
+              "default": []
+            },
+            "tags": {
+              "type": "array",
+              "title": "标签列表 (array<string>)",
+              "description": "用于分类和过滤的标签集合",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "calibrationPoints": {
+              "type": "array",
+              "title": "标定点 (object-array)",
+              "description": "用于标定的参考点坐标集合",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "title": "点名称"
+                  },
+                  "x": {
+                    "type": "number",
+                    "title": "X 坐标 (px)"
+                  },
+                  "y": {
+                    "type": "number",
+                    "title": "Y 坐标 (px)"
+                  },
+                  "weight": {
+                    "type": "number",
+                    "title": "权重"
+                  }
+                }
+              },
+              "default": []
+            },
             "advancedSettings": {
               "type": "object",
               "title": "高级设置",

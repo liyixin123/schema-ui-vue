@@ -10,9 +10,11 @@
           :label="field.label"
           :description="field.description"
           :children="field.children"
-          :config="getGroupConfig(field.key)"
+          :config="config"
           :columns="columns"
-          @update="onNestedUpdate(field.key, $event)"
+          :collapsible="collapsibleGroups"
+          :collapsible-groups="collapsibleGroups"
+          @update="$emit('update', $event)"
         />
         <FieldWrapper
           v-else-if="field.controlType === 'object-array'"
@@ -75,8 +77,9 @@ const props = withDefaults(
     config: Record<string, unknown>
     errors?: ValidationError[]
     columns?: number
+    collapsibleGroups?: boolean
   }>(),
-  { columns: 2 },
+  { columns: 2, collapsibleGroups: false },
 )
 
 const emit = defineEmits<{
@@ -99,17 +102,8 @@ function getFieldValue(path: string): unknown {
   }, props.config)
 }
 
-function getGroupConfig(key: string): Record<string, unknown> {
-  const val = props.config[key]
-  return (val as Record<string, unknown>) ?? {}
-}
-
 function onFieldUpdate(path: string, value: unknown): void {
   emit('update', { path, value })
-}
-
-function onNestedUpdate(groupKey: string, event: { path: string; value: unknown }): void {
-  emit('update', { path: `${groupKey}.${event.path}`, value: event.value })
 }
 </script>
 
@@ -118,6 +112,8 @@ function onNestedUpdate(groupKey: string, event: { path: string; value: unknown 
   display: grid;
   grid-template-columns: repeat(var(--grid-cols, 2), 1fr);
   column-gap: 20px;
+  min-width: 0;
+  width: 100%;
 }
 
 .field-cell--full {
