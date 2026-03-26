@@ -5,6 +5,9 @@ import ConfigToolbar from '../components/ConfigToolbar.vue'
 import FieldGroup from '../components/FieldGroup.vue'
 import FieldWrapper from '../components/FieldWrapper.vue'
 import FormRenderer from '../components/FormRenderer.vue'
+import AlgorithmLayout from '../components/AlgorithmLayout.vue'
+import AlgorithmTabContent from '../components/AlgorithmTabContent.vue'
+import ObjectArrayInput from '../components/controls/ObjectArrayInput.vue'
 import type { FormFieldDescriptor } from '../types/form'
 import type { ValidationResult } from '../types/validation'
 
@@ -125,6 +128,47 @@ describe('FieldGroup', () => {
     await wrapper.find('input').setValue('localhost')
     expect(wrapper.emitted('update')).toBeTruthy()
   })
+
+  it('does not show chevron when collapsible=false (default)', () => {
+    const wrapper = mount(FieldGroup, {
+      props: { label: 'S', children, config: {} },
+    })
+    expect(wrapper.find('.field-group-chevron').exists()).toBe(false)
+  })
+
+  it('shows chevron when collapsible=true', () => {
+    const wrapper = mount(FieldGroup, {
+      props: { label: 'S', children, config: {}, collapsible: true },
+    })
+    expect(wrapper.find('.field-group-chevron').exists()).toBe(true)
+  })
+
+  it('legend has clickable class when collapsible=true', () => {
+    const wrapper = mount(FieldGroup, {
+      props: { label: 'S', children, config: {}, collapsible: true },
+    })
+    expect(wrapper.find('.field-group-legend').classes()).toContain('field-group-legend--clickable')
+  })
+
+  it('collapses content when legend clicked with collapsible=true', async () => {
+    const wrapper = mount(FieldGroup, {
+      props: { label: 'S', children, config: {}, collapsible: true },
+    })
+    // Content wrapper div is initially visible (no display:none)
+    await wrapper.find('.field-group-legend').trigger('click')
+    // Find the v-show div (the one wrapping FormRenderer)
+    const vShowDiv = wrapper.find('fieldset > div')
+    expect((vShowDiv.element as HTMLElement).style.display).toBe('none')
+  })
+
+  it('does not collapse when legend clicked with collapsible=false', async () => {
+    const wrapper = mount(FieldGroup, {
+      props: { label: 'S', children, config: {} },
+    })
+    await wrapper.find('.field-group-legend').trigger('click')
+    const vShowDiv = wrapper.find('fieldset > div')
+    expect((vShowDiv.element as HTMLElement).style.display).not.toBe('none')
+  })
 })
 
 // ── FieldWrapper ──────────────────────────────────────────────
@@ -217,5 +261,167 @@ describe('FormRenderer', () => {
       props: { fields: [textField], config: {}, columns: 3 },
     })
     expect((wrapper.find('.form-renderer').element as HTMLElement).style.getPropertyValue('--grid-cols')).toBe('3')
+  })
+
+  it('renders object-array field with full-width class', () => {
+    const objArrayField: FormFieldDescriptor = {
+      key: 'items', path: 'items', label: 'Items', controlType: 'object-array', required: false,
+      itemSchema: [{ key: 'name', path: 'name', label: 'Name', controlType: 'text', required: false }],
+    }
+    const wrapper = mount(FormRenderer, {
+      props: { fields: [objArrayField], config: { items: [] } },
+    })
+    expect(wrapper.find('.field-cell--full').exists()).toBe(true)
+  })
+})
+
+// ── ObjectArrayInput ───────────────────────────────────────────
+
+describe('ObjectArrayInput', () => {
+  const itemSchema: FormFieldDescriptor[] = [
+    { key: 'name', path: 'name', label: 'Name', controlType: 'text', required: false },
+    { key: 'value', path: 'value', label: 'Value', controlType: 'number', required: false },
+  ]
+
+  it('renders empty state when no items', () => {
+    const wrapper = mount(ObjectArrayInput, {
+      props: { modelValue: [], itemSchema },
+    })
+    expect(wrapper.find('.obj-array-empty').exists()).toBe(true)
+  })
+
+  it('renders items when provided', () => {
+    const wrapper = mount(ObjectArrayInput, {
+      props: { modelValue: [{ name: 'foo', value: 1 }], itemSchema },
+    })
+    expect(wrapper.findAll('.obj-array-item')).toHaveLength(1)
+  })
+
+  it('emits new array when add button clicked', async () => {
+    const wrapper = mount(ObjectArrayInput, {
+      props: { modelValue: [], itemSchema },
+    })
+    await wrapper.find('.obj-array-add-btn').trigger('click')
+    const emitted = wrapper.emitted('update:modelValue') as Array<[unknown[]]>
+    expect(emitted[0][0]).toHaveLength(1)
+  })
+
+  it('emits array without item when delete clicked', async () => {
+    const wrapper = mount(ObjectArrayInput, {
+      props: { modelValue: [{ name: 'a', value: 1 }, { name: 'b', value: 2 }], itemSchema },
+    })
+    await wrapper.find('.obj-array-delete-btn').trigger('click')
+    const emitted = wrapper.emitted('update:modelValue') as Array<[unknown[]]>
+    expect(emitted[0][0]).toHaveLength(1)
+  })
+
+  it('collapses item when header clicked', async () => {
+    const wrapper = mount(ObjectArrayInput, {
+      props: { modelValue: [{ name: 'test', value: 0 }], itemSchema },
+    })
+    const body = wrapper.find('.obj-array-item-body')
+    expect((body.element as HTMLElement).style.display).not.toBe('none')
+    await wrapper.find('.obj-array-item-header').trigger('click')
+    expect((body.element as HTMLElement).style.display).toBe('none')
+  })
+
+  it('shows item title from first string field', () => {
+    const wrapper = mount(ObjectArrayInput, {
+      props: { modelValue: [{ name: 'MyItem', value: 0 }], itemSchema },
+    })
+    expect(wrapper.find('.obj-array-item-title').text()).toBe('MyItem')
+  })
+
+  it('falls back to "项目 N" when no string value', () => {
+    const wrapper = mount(ObjectArrayInput, {
+      props: { modelValue: [{ name: '', value: 0 }], itemSchema },
+    })
+    expect(wrapper.find('.obj-array-item-title').text()).toBe('项目 1')
+  })
+})
+
+// ── AlgorithmLayout ───────────────────────────────────────────
+
+describe('AlgorithmLayout', () => {
+  const tabField: FormFieldDescriptor = {
+    key: 'algo1', path: 'algo1', label: 'Algorithm 1', controlType: 'group', required: false,
+    depth: 0,
+    children: [
+      { key: 'enabled', path: 'algo1.enabled', label: 'Enabled', controlType: 'checkbox', required: false, depth: 1 },
+    ],
+  }
+  const tabField2: FormFieldDescriptor = {
+    key: 'algo2', path: 'algo2', label: 'Algorithm 2', controlType: 'group', required: false,
+    depth: 0,
+    children: [
+      { key: 'threshold', path: 'algo2.threshold', label: 'Threshold', controlType: 'number', required: false, depth: 1 },
+    ],
+  }
+
+  it('renders tab buttons for depth-0 group fields', () => {
+    const wrapper = mount(AlgorithmLayout, {
+      props: { fields: [tabField, tabField2], config: { algo1: {}, algo2: {} } },
+    })
+    const tabs = wrapper.findAll('.algo-tab')
+    expect(tabs).toHaveLength(2)
+    expect(tabs[0].text()).toBe('Algorithm 1')
+    expect(tabs[1].text()).toBe('Algorithm 2')
+  })
+
+  it('first tab is active by default', () => {
+    const wrapper = mount(AlgorithmLayout, {
+      props: { fields: [tabField, tabField2], config: { algo1: {}, algo2: {} } },
+    })
+    expect(wrapper.find('.algo-tab--active').text()).toBe('Algorithm 1')
+  })
+
+  it('switches active tab on click', async () => {
+    const wrapper = mount(AlgorithmLayout, {
+      props: { fields: [tabField, tabField2], config: { algo1: {}, algo2: {} } },
+    })
+    await wrapper.findAll('.algo-tab')[1].trigger('click')
+    expect(wrapper.find('.algo-tab--active').text()).toBe('Algorithm 2')
+  })
+
+  it('does not render tabs for non-group fields (shows in preamble)', () => {
+    const textField: FormFieldDescriptor = {
+      key: 'version', path: 'version', label: 'Version', controlType: 'text', required: false, depth: 0,
+    }
+    const wrapper = mount(AlgorithmLayout, {
+      props: { fields: [textField, tabField], config: { version: '', algo1: {} } },
+    })
+    // Only 1 tab (tabField), text field is in preamble
+    expect(wrapper.findAll('.algo-tab')).toHaveLength(1)
+  })
+})
+
+// ── AlgorithmTabContent ───────────────────────────────────────
+
+describe('AlgorithmTabContent', () => {
+  const subGroup: FormFieldDescriptor = {
+    key: 'params', path: 'algo.params', label: 'Params', controlType: 'group', required: false,
+    depth: 1,
+    children: [
+      { key: 'speed', path: 'algo.params.speed', label: 'Speed', controlType: 'number', required: false, depth: 2 },
+    ],
+  }
+  const tabField: FormFieldDescriptor = {
+    key: 'algo', path: 'algo', label: 'Algo', controlType: 'group', required: false,
+    depth: 0,
+    children: [subGroup],
+  }
+
+  it('renders column layout for depth-1 group children', () => {
+    const wrapper = mount(AlgorithmTabContent, {
+      props: { field: tabField, config: { algo: { params: { speed: 0 } } } },
+    })
+    expect(wrapper.find('.algo-columns').exists()).toBe(true)
+  })
+
+  it('renders FieldGroup for each depth-1 group with collapsible', () => {
+    const wrapper = mount(AlgorithmTabContent, {
+      props: { field: tabField, config: { algo: { params: { speed: 0 } } } },
+    })
+    expect(wrapper.find('fieldset').exists()).toBe(true)
   })
 })

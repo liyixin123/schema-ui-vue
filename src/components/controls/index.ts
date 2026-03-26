@@ -6,8 +6,9 @@ import CheckboxInput from './CheckboxInput.vue'
 import SelectInput from './SelectInput.vue'
 import TextareaInput from './TextareaInput.vue'
 import ArrayInput from './ArrayInput.vue'
+import ObjectArrayInput from './ObjectArrayInput.vue'
 
-export const controlRegistry: Record<Exclude<ControlType, 'group'>, Component> = {
+export const controlRegistry: Record<Exclude<ControlType, 'group' | 'object-array'>, Component> = {
   text: TextInput,
   number: NumberInput,
   checkbox: CheckboxInput,
@@ -16,4 +17,4 @@ export const controlRegistry: Record<Exclude<ControlType, 'group'>, Component> =
   array: ArrayInput,
 }
 
-export { TextInput, NumberInput, CheckboxInput, SelectInput, TextareaInput, ArrayInput }
+export { TextInput, NumberInput, CheckboxInput, SelectInput, TextareaInput, ArrayInput, ObjectArrayInput }

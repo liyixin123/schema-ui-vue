@@ -1,27 +1,61 @@
 <template>
   <div class="demo-app">
     <header class="demo-header">
-      <h1 class="demo-title">Auto Config</h1>
-      <p class="demo-subtitle">JSON Schema → Form Generator</p>
+      <div class="demo-header-left">
+        <h1 class="demo-title">Auto Config</h1>
+        <p class="demo-subtitle">JSON Schema → Form Generator</p>
+      </div>
+      <div class="demo-header-right">
+        <button
+          class="demo-mode-btn"
+          :class="{ 'demo-mode-btn--active': layoutMode === 'default' }"
+          type="button"
+          @click="setMode('default')"
+        >
+          默认布局
+        </button>
+        <button
+          class="demo-mode-btn"
+          :class="{ 'demo-mode-btn--active': layoutMode === 'algorithm' }"
+          type="button"
+          @click="setMode('algorithm')"
+        >
+          算法参数显示
+        </button>
+      </div>
     </header>
 
     <main class="demo-main">
       <AutoConfigForm
-        schema-url="/samples/example-schema.json"
+        :schema-url="schemaUrl"
         v-model="config"
         :show-toolbar="true"
-        :show-preview="true"
-        :columns="2"
+        :show-preview="layoutMode === 'default'"
+        :columns="layoutMode === 'algorithm' ? 3 : 2"
+        :layout-mode="layoutMode"
       />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { AutoConfigForm } from 'schema-ui-vue'
+import type { LayoutMode } from 'schema-ui-vue'
 
+const layoutMode = ref<LayoutMode>('default')
 const config = ref<Record<string, unknown>>({})
+
+const schemaUrl = computed(() =>
+  layoutMode.value === 'algorithm'
+    ? '/samples/algorithm-schema.json'
+    : '/samples/example-schema.json',
+)
+
+function setMode(mode: LayoutMode): void {
+  layoutMode.value = mode
+  config.value = {}
+}
 </script>
 
 <style>
@@ -47,12 +81,64 @@ body {
   background: #ffffff;
   border-bottom: 1px solid #d1d5db;
   padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 @media (prefers-color-scheme: dark) {
   .demo-header {
     background: #1e2130;
     border-bottom-color: #374151;
+  }
+}
+
+.demo-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.demo-header-right {
+  display: flex;
+  gap: 8px;
+}
+
+.demo-mode-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: transparent;
+  color: #4a5568;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.demo-mode-btn:hover {
+  background: #f0f4f8;
+}
+
+.demo-mode-btn--active {
+  background: #4a90e2;
+  border-color: #4a90e2;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  .demo-mode-btn {
+    border-color: #374151;
+    color: #94a3b8;
+  }
+  .demo-mode-btn:hover {
+    background: #2d3748;
+  }
+  .demo-mode-btn--active {
+    background: #4a90e2;
+    border-color: #4a90e2;
+    color: #ffffff;
   }
 }
 

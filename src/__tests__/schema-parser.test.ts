@@ -161,4 +161,88 @@ describe('parseSchema', () => {
     expect(fields[0].minimum).toBe(1)
     expect(fields[0].maximum).toBe(65535)
   })
+
+  it('sets depth=0 on root-level fields', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: { name: { type: 'string' } },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].depth).toBe(0)
+  })
+
+  it('increments depth for nested object children', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        server: {
+          type: 'object',
+          properties: {
+            config: {
+              type: 'object',
+              properties: {
+                timeout: { type: 'integer' },
+              },
+            },
+          },
+        },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].depth).toBe(0)
+    expect(fields[0].children![0].depth).toBe(1)
+    expect(fields[0].children![0].children![0].depth).toBe(2)
+  })
+
+  it('maps array of objects to object-array control', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              value: { type: 'integer' },
+            },
+          },
+        },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].controlType).toBe('object-array')
+    expect(fields[0].itemType).toBe('object')
+    expect(fields[0].itemSchema).toHaveLength(2)
+    expect(fields[0].itemSchema![0].key).toBe('name')
+    expect(fields[0].itemSchema![1].key).toBe('value')
+  })
+
+  it('itemSchema fields start at depth=0', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        rows: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: { label: { type: 'string' } },
+          },
+        },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].itemSchema![0].depth).toBe(0)
+  })
+
+  it('primitive arrays remain array control even with items schema', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        tags: { type: 'array', items: { type: 'string' } },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].controlType).toBe('array')
+  })
 })

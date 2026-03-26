@@ -1,4 +1,5 @@
 import type { JsonSchema } from '../types/schema'
+import type { FormFieldDescriptor } from '../types/form'
 
 type ConfigValue = string | number | boolean | null | Record<string, unknown>
 
@@ -25,4 +26,30 @@ function getTypeDefault(schema: JsonSchema): ConfigValue | unknown[] {
     return ''
   }
   return null
+}
+
+export function buildDefaultFromDescriptors(fields: FormFieldDescriptor[]): Record<string, unknown> {
+  return fields.reduce<Record<string, unknown>>((acc, field) => {
+    if (field.controlType === 'group' && field.children) {
+      return { ...acc, [field.key]: buildDefaultFromDescriptors(field.children) }
+    }
+    if (field.controlType === 'object-array') {
+      return { ...acc, [field.key]: [] }
+    }
+    if (field.defaultValue !== undefined) {
+      return { ...acc, [field.key]: field.defaultValue }
+    }
+    const fallback = getDescriptorDefault(field)
+    return { ...acc, [field.key]: fallback }
+  }, {})
+}
+
+function getDescriptorDefault(field: FormFieldDescriptor): ConfigValue | unknown[] {
+  switch (field.controlType) {
+    case 'checkbox': return false
+    case 'number': return 0
+    case 'array': return []
+    case 'select': return field.options?.[0]?.value ?? ''
+    default: return ''
+  }
 }

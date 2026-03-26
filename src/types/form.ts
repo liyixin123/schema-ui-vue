@@ -1,6 +1,8 @@
-export type ControlType = 'text' | 'number' | 'checkbox' | 'select' | 'textarea' | 'group' | 'array'
+export type ControlType = 'text' | 'number' | 'checkbox' | 'select' | 'textarea' | 'group' | 'array' | 'object-array'
 
-export type ArrayItemType = 'string' | 'number'
+export type ArrayItemType = 'string' | 'number' | 'object'
+
+export type LayoutMode = 'default' | 'algorithm'
 
 export interface FormFieldDescriptor {
   key: string
@@ -17,4 +19,6 @@ export interface FormFieldDescriptor {
   maxLength?: number
   children?: FormFieldDescriptor[]
   itemType?: ArrayItemType
+  depth?: number
+  itemSchema?: FormFieldDescriptor[]
 }

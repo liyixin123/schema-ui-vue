@@ -3,7 +3,7 @@
     <template v-for="field in fields" :key="field.path">
       <div
         class="field-cell"
-        :class="{ 'field-cell--full': field.controlType === 'group' }"
+        :class="{ 'field-cell--full': field.controlType === 'group' || field.controlType === 'object-array' }"
       >
         <FieldGroup
           v-if="field.controlType === 'group' && field.children"
@@ -15,6 +15,22 @@
           @update="onNestedUpdate(field.key, $event)"
         />
         <FieldWrapper
+          v-else-if="field.controlType === 'object-array'"
+          :label="field.label"
+          :description="field.description"
+          :required="field.required"
+          :errors="fieldErrors(field.path)"
+          :has-error="fieldErrors(field.path).length > 0"
+        >
+          <ObjectArrayInput
+            :model-value="(getFieldValue(field.path) as Record<string, unknown>[])"
+            :item-schema="field.itemSchema"
+            :has-error="fieldErrors(field.path).length > 0"
+            :label="field.label"
+            @update:model-value="onFieldUpdate(field.path, $event)"
+          />
+        </FieldWrapper>
+        <FieldWrapper
           v-else
           :label="field.label"
           :description="field.description"
@@ -23,7 +39,7 @@
           :has-error="fieldErrors(field.path).length > 0"
         >
           <component
-            :is="controlRegistry[field.controlType as Exclude<ControlType, 'group'>]"
+            :is="controlRegistry[field.controlType as Exclude<ControlType, 'group' | 'object-array'>]"
             :model-value="getFieldValue(field.path)"
             :has-error="fieldErrors(field.path).length > 0"
             :options="field.options"
@@ -49,6 +65,7 @@ import type { ValidationError } from '../types/validation'
 import { controlRegistry } from './controls/index'
 import FieldWrapper from './FieldWrapper.vue'
 import FieldGroup from './FieldGroup.vue'
+import ObjectArrayInput from './controls/ObjectArrayInput.vue'
 
 const props = withDefaults(
   defineProps<{

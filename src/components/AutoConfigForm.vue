@@ -16,7 +16,16 @@
 
       <div class="acf-body" :class="{ 'acf-body--split': showPreview }">
         <div class="acf-form">
+          <AlgorithmLayout
+            v-if="props.layoutMode === 'algorithm'"
+            :fields="fields"
+            :config="internalConfig"
+            :errors="validationResult?.errors"
+            :columns="internalColumns"
+            @update="handleFieldUpdate"
+          />
           <FormRenderer
+            v-else
             :fields="fields"
             :config="internalConfig"
             :errors="validationResult?.errors"
@@ -38,12 +47,13 @@
 import { ref, watch, computed } from 'vue'
 import type { JsonSchema } from '../types/schema'
 import type { ValidationResult } from '../types/validation'
-import type { FormFieldDescriptor } from '../types/form'
+import type { FormFieldDescriptor, LayoutMode } from '../types/form'
 import { parseSchema } from '../utils/schema-parser'
 import { useFormState } from '../composables/useFormState'
 import { useValidation } from '../composables/useValidation'
 import { downloadJson } from '../utils/file-io'
 import FormRenderer from './FormRenderer.vue'
+import AlgorithmLayout from './AlgorithmLayout.vue'
 import ConfigToolbar from './ConfigToolbar.vue'
 import ConfigPreview from './ConfigPreview.vue'
 
@@ -58,11 +68,13 @@ const props = withDefaults(
     columns?: number
     showToolbar?: boolean
     showPreview?: boolean
+    layoutMode?: LayoutMode
   }>(),
   {
     columns: 2,
     showToolbar: false,
     showPreview: false,
+    layoutMode: 'default',
   },
 )
 

@@ -1,0 +1,362 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "算法检测参数配置",
+  "description": "视觉算法检测模块的参数配置",
+  "properties": {
+    "globalSettings": {
+      "type": "object",
+      "title": "全局设置",
+      "description": "适用于所有算法模块的全局参数",
+      "properties": {
+        "modelVersion": {
+          "type": "string",
+          "title": "模型版本",
+          "default": "v2.1"
+        },
+        "gpuEnabled": {
+          "type": "boolean",
+          "title": "启用 GPU 加速",
+          "default": true
+        },
+        "confidenceThreshold": {
+          "type": "number",
+          "title": "置信度阈值",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5
+        },
+        "logLevel": {
+          "type": "string",
+          "title": "日志级别",
+          "enum": ["debug", "info", "warn", "error"],
+          "default": "info"
+        }
+      }
+    },
+    "faceDetection": {
+      "type": "object",
+      "title": "人脸检测",
+      "description": "人脸检测与识别算法参数",
+      "properties": {
+        "basicParams": {
+          "type": "object",
+          "title": "基础参数",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "title": "启用",
+              "default": true
+            },
+            "minFaceSize": {
+              "type": "integer",
+              "title": "最小人脸尺寸 (px)",
+              "minimum": 10,
+              "maximum": 500,
+              "default": 30
+            },
+            "maxFaceCount": {
+              "type": "integer",
+              "title": "最大人脸数量",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "detectionMode": {
+              "type": "string",
+              "title": "检测模式",
+              "enum": ["fast", "balanced", "accurate"],
+              "default": "balanced"
+            }
+          }
+        },
+        "advancedParams": {
+          "type": "object",
+          "title": "高级参数",
+          "properties": {
+            "nmsThreshold": {
+              "type": "number",
+              "title": "NMS 阈值",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.4
+            },
+            "landmarkModel": {
+              "type": "string",
+              "title": "关键点模型",
+              "enum": ["5-point", "68-point", "98-point"],
+              "default": "68-point"
+            },
+            "deepSettings": {
+              "type": "object",
+              "title": "深度模型设置",
+              "properties": {
+                "backbone": {
+                  "type": "string",
+                  "title": "骨干网络",
+                  "enum": ["ResNet50", "MobileNet", "EfficientNet"],
+                  "default": "ResNet50"
+                },
+                "inputSize": {
+                  "type": "integer",
+                  "title": "输入尺寸",
+                  "minimum": 32,
+                  "maximum": 1280,
+                  "default": 640
+                },
+                "useAMP": {
+                  "type": "boolean",
+                  "title": "启用混合精度",
+                  "default": false
+                }
+              }
+            }
+          }
+        },
+        "trackingParams": {
+          "type": "object",
+          "title": "跟踪参数",
+          "properties": {
+            "trackingEnabled": {
+              "type": "boolean",
+              "title": "启用跟踪",
+              "default": true
+            },
+            "maxLostFrames": {
+              "type": "integer",
+              "title": "最大丢失帧数",
+              "minimum": 1,
+              "maximum": 120,
+              "default": 30
+            },
+            "iouThreshold": {
+              "type": "number",
+              "title": "IOU 阈值",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.3
+            }
+          }
+        },
+        "regions": {
+          "type": "array",
+          "title": "检测区域",
+          "description": "指定感兴趣的检测区域（ROI），留空则全图检测",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "区域名称"
+              },
+              "x": {
+                "type": "integer",
+                "title": "X 坐标",
+                "minimum": 0,
+                "default": 0
+              },
+              "y": {
+                "type": "integer",
+                "title": "Y 坐标",
+                "minimum": 0,
+                "default": 0
+              },
+              "width": {
+                "type": "integer",
+                "title": "宽度",
+                "minimum": 1,
+                "default": 320
+              },
+              "height": {
+                "type": "integer",
+                "title": "高度",
+                "minimum": 1,
+                "default": 240
+              }
+            }
+          }
+        }
+      }
+    },
+    "vehicleDetection": {
+      "type": "object",
+      "title": "车辆检测",
+      "description": "车辆检测与车牌识别算法参数",
+      "properties": {
+        "basicParams": {
+          "type": "object",
+          "title": "基础参数",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "title": "启用",
+              "default": false
+            },
+            "vehicleTypes": {
+              "type": "string",
+              "title": "车辆类型",
+              "enum": ["car", "truck", "bus", "motorcycle", "all"],
+              "default": "all"
+            },
+            "minVehicleSize": {
+              "type": "integer",
+              "title": "最小车辆尺寸 (px)",
+              "minimum": 20,
+              "maximum": 1000,
+              "default": 60
+            }
+          }
+        },
+        "trackingParams": {
+          "type": "object",
+          "title": "跟踪参数",
+          "properties": {
+            "trackingEnabled": {
+              "type": "boolean",
+              "title": "启用跟踪",
+              "default": true
+            },
+            "maxAge": {
+              "type": "integer",
+              "title": "最大跟踪帧数",
+              "minimum": 1,
+              "maximum": 300,
+              "default": 60
+            },
+            "iouThreshold": {
+              "type": "number",
+              "title": "IOU 阈值",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.35
+            }
+          }
+        },
+        "licensePlate": {
+          "type": "object",
+          "title": "车牌识别",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "title": "启用车牌识别",
+              "default": false
+            },
+            "recognitionMode": {
+              "type": "string",
+              "title": "识别模式",
+              "enum": ["standard", "enhanced", "night"],
+              "default": "standard"
+            }
+          }
+        },
+        "lanes": {
+          "type": "array",
+          "title": "车道配置",
+          "description": "定义各车道的检测线和方向",
+          "items": {
+            "type": "object",
+            "properties": {
+              "laneId": {
+                "type": "string",
+                "title": "车道编号"
+              },
+              "direction": {
+                "type": "string",
+                "title": "行驶方向",
+                "enum": ["inbound", "outbound", "both"],
+                "default": "both"
+              },
+              "speedLimit": {
+                "type": "integer",
+                "title": "限速 (km/h)",
+                "minimum": 0,
+                "maximum": 200,
+                "default": 80
+              }
+            }
+          }
+        }
+      }
+    },
+    "behaviorAnalysis": {
+      "type": "object",
+      "title": "行为分析",
+      "description": "异常行为检测与事件分析参数",
+      "properties": {
+        "basicParams": {
+          "type": "object",
+          "title": "基础参数",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "title": "启用",
+              "default": false
+            },
+            "analysisMode": {
+              "type": "string",
+              "title": "分析模式",
+              "enum": ["realtime", "batch", "hybrid"],
+              "default": "realtime"
+            }
+          }
+        },
+        "alertParams": {
+          "type": "object",
+          "title": "告警参数",
+          "properties": {
+            "alertEnabled": {
+              "type": "boolean",
+              "title": "启用告警",
+              "default": true
+            },
+            "alertCooldown": {
+              "type": "integer",
+              "title": "告警冷却时间 (秒)",
+              "minimum": 0,
+              "maximum": 3600,
+              "default": 30
+            },
+            "sensitivityLevel": {
+              "type": "string",
+              "title": "灵敏度",
+              "enum": ["low", "medium", "high"],
+              "default": "medium"
+            }
+          }
+        },
+        "rules": {
+          "type": "array",
+          "title": "检测规则",
+          "description": "自定义异常行为检测规则",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ruleName": {
+                "type": "string",
+                "title": "规则名称"
+              },
+              "eventType": {
+                "type": "string",
+                "title": "事件类型",
+                "enum": ["intrusion", "loitering", "fighting", "crowd", "custom"],
+                "default": "intrusion"
+              },
+              "triggerCount": {
+                "type": "integer",
+                "title": "触发次数阈值",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 3
+              },
+              "enabled": {
+                "type": "boolean",
+                "title": "启用",
+                "default": true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

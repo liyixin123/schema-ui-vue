@@ -5,7 +5,10 @@ function resolveControlType(schema: JsonSchema): ControlType {
   if (schema.type === 'boolean') return 'checkbox'
   if (schema.type === 'number' || schema.type === 'integer') return 'number'
   if (schema.type === 'object') return 'group'
-  if (schema.type === 'array') return 'array'
+  if (schema.type === 'array') {
+    if (schema.items?.type === 'object') return 'object-array'
+    return 'array'
+  }
   if (schema.type === 'string') {
     if (Array.isArray(schema.enum) && schema.enum.length > 0) return 'select'
     if (schema.format === 'textarea') return 'textarea'
@@ -17,6 +20,7 @@ function resolveControlType(schema: JsonSchema): ControlType {
 function resolveItemType(schema: JsonSchema): ArrayItemType | undefined {
   if (schema.type !== 'array' || !schema.items) return undefined
   const itemsType = schema.items.type
+  if (itemsType === 'object') return 'object'
   if (itemsType === 'number' || itemsType === 'integer') return 'number'
   return 'string'
 }
@@ -34,6 +38,7 @@ function parseField(
   schema: JsonSchema,
   parentPath: string,
   required: boolean,
+  depth: number,
 ): FormFieldDescriptor {
   const path = parentPath ? `${parentPath}.${key}` : key
   const controlType = resolveControlType(schema)
@@ -52,10 +57,20 @@ function parseField(
     minLength: schema.minLength,
     maxLength: schema.maxLength,
     itemType: resolveItemType(schema),
+    depth,
   }
 
   if (controlType === 'group' && schema.properties) {
-    descriptor.children = parseProperties(schema.properties, schema.required ?? [], path)
+    descriptor.children = parseProperties(schema.properties, schema.required ?? [], path, depth + 1)
+  }
+
+  if (controlType === 'object-array' && schema.items?.properties) {
+    descriptor.itemSchema = parseProperties(
+      schema.items.properties,
+      schema.items.required ?? [],
+      '',
+      0,
+    )
   }
 
   return descriptor
@@ -65,9 +80,10 @@ function parseProperties(
   properties: Record<string, JsonSchema>,
   required: string[],
   parentPath: string,
+  depth: number,
 ): FormFieldDescriptor[] {
   return Object.entries(properties).map(([key, fieldSchema]) =>
-    parseField(key, fieldSchema, parentPath, required.includes(key)),
+    parseField(key, fieldSchema, parentPath, required.includes(key), depth),
   )
 }
 
@@ -75,5 +91,5 @@ export function parseSchema(schema: JsonSchema): FormFieldDescriptor[] {
   if (schema.type !== 'object' || !schema.properties) {
     return []
   }
-  return parseProperties(schema.properties, schema.required ?? [], '')
+  return parseProperties(schema.properties, schema.required ?? [], '', 0)
 }
