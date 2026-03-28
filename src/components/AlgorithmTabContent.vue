@@ -38,7 +38,7 @@
             :children="activeSubTabField.children ?? []"
             :config="config"
             :errors="errors"
-            :columns="1"
+            :columns="columns"
             :collapsible="true"
             :collapsible-groups="true"
             @update="$emit('update', $event)"
