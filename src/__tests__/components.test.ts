@@ -398,30 +398,69 @@ describe('AlgorithmLayout', () => {
 // ── AlgorithmTabContent ───────────────────────────────────────
 
 describe('AlgorithmTabContent', () => {
-  const subGroup: FormFieldDescriptor = {
-    key: 'params', path: 'algo.params', label: 'Params', controlType: 'group', required: false,
-    depth: 1,
+  const detectionGroup: FormFieldDescriptor = {
+    key: 'detection', path: 'algo.detection', label: '检测参数', controlType: 'group', required: false,
+    depth: 1, readonly: false,
     children: [
-      { key: 'speed', path: 'algo.params.speed', label: 'Speed', controlType: 'number', required: false, depth: 2 },
+      { key: 'speed', path: 'algo.detection.speed', label: 'Speed', controlType: 'number', required: false, depth: 2 },
+    ],
+  }
+  const qualityGroup: FormFieldDescriptor = {
+    key: 'quality', path: 'algo.quality', label: '质检参数', controlType: 'group', required: false,
+    depth: 1, readonly: false,
+    children: [
+      { key: 'tolerance', path: 'algo.quality.tolerance', label: 'Tolerance', controlType: 'number', required: false, depth: 2 },
+    ],
+  }
+  const resultGroup: FormFieldDescriptor = {
+    key: 'result', path: 'algo.result', label: '结果显示', controlType: 'group', required: false,
+    depth: 1, readonly: true,
+    children: [
+      { key: 'value', path: 'algo.result.value', label: 'Value', controlType: 'number', required: false, depth: 2, readonly: true },
     ],
   }
   const tabField: FormFieldDescriptor = {
     key: 'algo', path: 'algo', label: 'Algo', controlType: 'group', required: false,
     depth: 0,
-    children: [subGroup],
+    children: [detectionGroup, qualityGroup, resultGroup],
   }
 
-  it('renders column layout for depth-1 group children', () => {
+  it('renders subtab buttons for non-readonly group children', () => {
     const wrapper = mount(AlgorithmTabContent, {
-      props: { field: tabField, config: { algo: { params: { speed: 0 } } } },
+      props: { field: tabField, config: { algo: { detection: { speed: 0 }, quality: { tolerance: 0 }, result: { value: 0 } } } },
     })
-    expect(wrapper.find('.algo-columns').exists()).toBe(true)
+    const tabs = wrapper.findAll('.algo-subtab')
+    expect(tabs).toHaveLength(2)
+    expect(tabs[0].text()).toBe('检测参数')
+    expect(tabs[1].text()).toBe('质检参数')
   })
 
-  it('renders FieldGroup for each depth-1 group with collapsible', () => {
+  it('first subtab is active by default', () => {
     const wrapper = mount(AlgorithmTabContent, {
-      props: { field: tabField, config: { algo: { params: { speed: 0 } } } },
+      props: { field: tabField, config: { algo: { detection: { speed: 0 }, quality: { tolerance: 0 }, result: { value: 0 } } } },
     })
-    expect(wrapper.find('fieldset').exists()).toBe(true)
+    expect(wrapper.find('.algo-subtab--active').text()).toBe('检测参数')
+  })
+
+  it('switches active subtab on click', async () => {
+    const wrapper = mount(AlgorithmTabContent, {
+      props: { field: tabField, config: { algo: { detection: { speed: 0 }, quality: { tolerance: 0 }, result: { value: 0 } } } },
+    })
+    await wrapper.findAll('.algo-subtab')[1].trigger('click')
+    expect(wrapper.find('.algo-subtab--active').text()).toBe('质检参数')
+  })
+
+  it('renders readonly group in always-visible section', () => {
+    const wrapper = mount(AlgorithmTabContent, {
+      props: { field: tabField, config: { algo: { detection: { speed: 0 }, quality: { tolerance: 0 }, result: { value: 0 } } } },
+    })
+    expect(wrapper.find('.algo-always-visible').exists()).toBe(true)
+  })
+
+  it('renders FieldGroup inside subtab content', () => {
+    const wrapper = mount(AlgorithmTabContent, {
+      props: { field: tabField, config: { algo: { detection: { speed: 0 }, quality: { tolerance: 0 }, result: { value: 0 } } } },
+    })
+    expect(wrapper.find('.algo-subtab-content fieldset').exists()).toBe(true)
   })
 })
