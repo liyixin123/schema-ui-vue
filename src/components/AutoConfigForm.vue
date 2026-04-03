@@ -11,6 +11,7 @@
         @validate="handleValidate"
         @reset="handleReset"
         @export="handleExport"
+        @export-schema="handleExportSchema"
         @update:columns="internalColumns = $event"
       />
 
@@ -187,8 +188,13 @@ function handleReset(): void {
 
 function handleExport(): void {
   const title = effectiveSchema.value?.title ?? 'config'
-  const exportData = stripReadonlyPaths(internalConfig.value, fields.value)
-  downloadJson(exportData, `${title}.json`)
+  downloadJson(displayConfig.value, `${title}.json`)
+}
+
+function handleExportSchema(): void {
+  if (!effectiveSchema.value) return
+  const title = effectiveSchema.value.title ?? 'schema'
+  downloadJson(effectiveSchema.value, `${title}-schema.json`)
 }
 
 // ── Exposed methods ───────────────────────────────────────────

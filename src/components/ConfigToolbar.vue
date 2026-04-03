@@ -28,6 +28,9 @@
       <button class="btn btn-secondary" type="button" @click="$emit('reset')">
         Reset
       </button>
+      <button class="btn btn-secondary" type="button" @click="$emit('export-schema')">
+        Export Schema
+      </button>
       <button class="btn btn-primary" type="button" @click="$emit('export')">
         Export JSON
       </button>
@@ -51,6 +54,7 @@ defineEmits<{
   validate: []
   reset: []
   export: []
+  'export-schema': []
   'update:columns': [value: number]
 }>()
 </script>
