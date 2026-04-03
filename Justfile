@@ -48,3 +48,13 @@ release version:
     npm publish
 
     echo "✓ Released schema-ui-vue@{{version}}"
+
+# ── Tauri ──────────────────────────────────────────────────────
+
+# Start Tauri desktop app in dev mode
+tauri-dev:
+    pnpm tauri dev
+
+# Build Tauri app for current platform (Windows → .exe, macOS → .app/.dmg)
+tauri-build:
+    pnpm tauri build
