@@ -59,7 +59,7 @@
 }
 ```
 
-**对象数组**（元素为对象，生成可增删的行列表）：
+**对象数组**（元素为对象，生成可增删的列表，每项可展开编辑）：
 
 ```json
 {
@@ -67,6 +67,7 @@
   "title": "测量点列表",
   "items": {
     "type": "object",
+    "title": "测量点",
     "properties": {
       "name": { "type": "string", "title": "点名称" },
       "x":    { "type": "number", "title": "X 坐标" },
@@ -76,6 +77,8 @@
   "default": []
 }
 ```
+
+> **`items.title`**：每一项折叠标题的前缀，如 `"title": "测量点"` 会生成"测量点 1"、"测量点 2"……若未填写则默认显示"项目 N"。列表中若有 `string` 类型字段且已填值，则优先以该值作为标题。
 
 ### 2.3 分组（对象）
 
@@ -120,7 +123,11 @@
 
 ### 3.2 `x-column` — 布局列标识
 
-在算法布局（`layoutMode: "algorithm"`）中，用于将同一深度的分组字段排列到同一视觉列。常见值为 `"detection"`、`"quality"`、`"result"`，可根据实际布局自定义。
+在算法布局（`layoutMode: "algorithm"`）中，用于将同一深度的字段排列为并列的子 Tab。常见值为 `"detection"`、`"quality"`、`"result"`，可根据实际布局自定义。
+
+支持两种类型：
+
+**`object` 类型**（固定字段分组）：
 
 ```json
 {
@@ -129,15 +136,44 @@
     "title": "检测参数",
     "x-column": "detection",
     "properties": { ... }
-  },
-  "quality": {
-    "type": "object",
-    "title": "质检参数",
-    "x-column": "quality",
-    "properties": { ... }
   }
 }
 ```
+
+> `title` 仅用于 Tab 按钮标题，Tab 内容区不会重复渲染标题。
+
+**`array`（对象数组）类型**（可动态增删的规则列表）：
+
+```json
+{
+  "quality": {
+    "type": "array",
+    "title": "QA参数",
+    "x-column": "quality",
+    "items": {
+      "type": "object",
+      "title": "规则",
+      "properties": {
+        "nominalValue": { "type": "number", "title": "理论值", "default": 0 },
+        "upperLimit":   { "type": "number", "title": "上限",   "default": 0 },
+        "lowerLimit":   { "type": "number", "title": "下限",   "default": 0 },
+        "unit": {
+          "type": "string",
+          "title": "单位",
+          "enum": ["mm", "cm", "inch", "px"],
+          "default": "mm"
+        }
+      }
+    },
+    "default": [
+      { "nominalValue": 100.0, "upperLimit": 100.1, "lowerLimit": 99.9, "unit": "mm" },
+      { "nominalValue": 50.0,  "upperLimit": 50.05, "lowerLimit": 49.95, "unit": "mm" }
+    ]
+  }
+}
+```
+
+> 对象数组类型的列在 Tab 内渲染为可折叠列表，用户可自由添加/删除条目。`items.title` 作为每项的编号前缀（如"规则 1"、"规则 2"）。`default` 中可预置初始条目。
 
 ### 3.3 `x-canvas` — 画布交互字段
 
@@ -373,21 +409,39 @@
       }
     },
     "quality": {
-      "type": "object",
-      "title": "质检参数",
+      "type": "array",
+      "title": "QA参数",
       "x-column": "quality",
-      "properties": {
-        "nominalValue": {
-          "type": "number",
-          "title": "标称值 (mm)",
-          "default": 100.0
-        },
-        "tolerance": {
-          "type": "number",
-          "title": "公差 (mm)",
-          "default": 0.1
+      "items": {
+        "type": "object",
+        "title": "规则",
+        "properties": {
+          "nominalValue": {
+            "type": "number",
+            "title": "理论值",
+            "default": 0
+          },
+          "upperLimit": {
+            "type": "number",
+            "title": "上限",
+            "default": 0
+          },
+          "lowerLimit": {
+            "type": "number",
+            "title": "下限",
+            "default": 0
+          },
+          "unit": {
+            "type": "string",
+            "title": "单位",
+            "enum": ["mm", "cm", "inch", "px"],
+            "default": "mm"
+          }
         }
-      }
+      },
+      "default": [
+        { "nominalValue": 100.0, "upperLimit": 100.1, "lowerLimit": 99.9, "unit": "mm" }
+      ]
     },
     "result": {
       "type": "object",
