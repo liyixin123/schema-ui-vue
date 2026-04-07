@@ -23,6 +23,7 @@ export interface FormFieldDescriptor {
   itemType?: ArrayItemType
   depth?: number
   itemSchema?: FormFieldDescriptor[]
+  itemTitle?: string
   readonly?: boolean
   column?: string
   canvas?: CanvasDescriptor

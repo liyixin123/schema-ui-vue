@@ -32,16 +32,27 @@
         </div>
 
         <div v-if="activeSubTabField" class="algo-subtab-content">
-          <FieldGroup
-            :label="activeSubTabField.label"
-            :description="activeSubTabField.description"
-            :children="activeSubTabField.children ?? []"
+          <p v-if="activeSubTabField.description" class="algo-subtab-description">
+            {{ activeSubTabField.description }}
+          </p>
+          <FormRenderer
+            v-if="activeSubTabField.controlType === 'group'"
+            :fields="activeSubTabField.children ?? []"
             :config="config"
             :errors="errors"
             :columns="columns"
-            :collapsible="true"
             :collapsible-groups="true"
             @update="$emit('update', $event)"
+          />
+          <ObjectArrayInput
+            v-else-if="activeSubTabField.controlType === 'object-array'"
+            :model-value="(getFieldValue(activeSubTabField.path) as Record<string, unknown>[])"
+            :item-schema="activeSubTabField.itemSchema"
+            :item-title="activeSubTabField.itemTitle"
+            :label="activeSubTabField.label"
+            :columns="columns"
+            :readonly="activeSubTabField.readonly"
+            @update:model-value="$emit('update', { path: activeSubTabField.path, value: $event })"
           />
         </div>
       </div>
@@ -76,6 +87,7 @@ import type { FormFieldDescriptor } from '../types/form'
 import type { ValidationError } from '../types/validation'
 import FormRenderer from './FormRenderer.vue'
 import FieldGroup from './FieldGroup.vue'
+import ObjectArrayInput from './controls/ObjectArrayInput.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -93,13 +105,21 @@ defineEmits<{
 
 const groupChildren = computed(() =>
   (props.field.children ?? []).filter(
-    (c) => c.controlType === 'group' && c.children,
+    (c) => (c.controlType === 'group' && c.children) || c.controlType === 'object-array',
   ),
 )
 
+function getFieldValue(path: string): unknown {
+  const parts = path.split('.')
+  return parts.reduce<unknown>((obj, key) => {
+    if (obj === null || obj === undefined) return undefined
+    return (obj as Record<string, unknown>)[key]
+  }, props.config)
+}
+
 const nonGroupChildren = computed(() =>
   (props.field.children ?? []).filter(
-    (c) => c.controlType !== 'group' && !c.canvas,
+    (c) => c.controlType !== 'group' && c.controlType !== 'object-array' && !c.canvas,
   ),
 )
 
@@ -183,6 +203,13 @@ const activeSubTabField = computed<FormFieldDescriptor | undefined>(() => {
 .algo-subtab-content {
   padding: 12px;
   background: var(--color-surface);
+}
+
+.algo-subtab-description {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
 .algo-sidebar {

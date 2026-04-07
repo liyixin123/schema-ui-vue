@@ -91,6 +91,7 @@ function parseField(
       0,
       isReadonly,
     )
+    descriptor.itemTitle = schema.items.title
   }
 
   return descriptor

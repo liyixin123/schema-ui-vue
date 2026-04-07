@@ -20,9 +20,17 @@
             },
             "label": {
               "type": "string",
-              "title": "标签",
+              "title": "字符串类型",
               "description": "自定义标签，用于标注该测量项",
               "default": "测量项A"
+            },
+            "paramNumber": {
+              "type": "number",
+              "title": "数字类型",
+              "description": "范围0-5",
+              "default": 1.0,
+              "minimum": 0,
+              "maximum": 5.0
             },
             "remark": {
               "type": "string",
@@ -33,8 +41,8 @@
             },
             "excludeAngles": {
               "type": "array",
-              "title": "排除角度",
-              "description": "检测时需跳过的角度（°）",
+              "title": "数组类型",
+              "description": "可自由增删数字",
               "items": {
                 "type": "number"
               },
@@ -44,7 +52,10 @@
               "type": "array",
               "title": "标定路点",
               "description": "在图像上绘制，相邻点依次连接形成标定折线",
-              "x-canvas": { "type": "pathpoint", "group": "length_calibration" },
+              "x-canvas": {
+                "type": "pathpoint",
+                "group": "length_calibration"
+              },
               "items": {
                 "type": "object",
                 "properties": {
@@ -97,32 +108,50 @@
           }
         },
         "quality": {
-          "type": "object",
-          "title": "质检参数",
+          "type": "array",
+          "title": "QA参数",
           "x-column": "quality",
-          "properties": {
-            "nominalValue": {
-              "type": "number",
-              "title": "标称值 (mm)",
-              "default": 100.0
-            },
-            "upperTolerance": {
-              "type": "number",
-              "title": "上偏差 (mm)",
-              "default": 0.1
-            },
-            "lowerTolerance": {
-              "type": "number",
-              "title": "下偏差 (mm)",
-              "default": -0.1
-            },
-            "unit": {
-              "type": "string",
-              "title": "单位",
-              "enum": ["mm", "cm", "inch", "px"],
-              "default": "mm"
+          "items": {
+            "type": "object",
+            "title": "规则",
+            "properties": {
+              "nominalValue": {
+                "type": "number",
+                "title": "理论值",
+                "default": 0
+              },
+              "upperLimit": {
+                "type": "number",
+                "title": "上限",
+                "default": 0
+              },
+              "lowerLimit": {
+                "type": "number",
+                "title": "下限",
+                "default": 0
+              },
+              "unit": {
+                "type": "string",
+                "title": "单位",
+                "enum": ["mm", "cm", "inch", "px"],
+                "default": "mm"
+              }
             }
-          }
+          },
+          "default": [
+            {
+              "nominalValue": 100.0,
+              "upperLimit": 100.1,
+              "lowerLimit": 99.9,
+              "unit": "mm"
+            },
+            {
+              "nominalValue": 50.0,
+              "upperLimit": 50.05,
+              "lowerLimit": 49.95,
+              "unit": "mm"
+            }
+          ]
         },
         "result": {
           "type": "object",
@@ -205,32 +234,50 @@
           }
         },
         "quality": {
-          "type": "object",
-          "title": "质检参数",
+          "type": "array",
+          "title": "QA参数",
           "x-column": "quality",
-          "properties": {
-            "nominalValue": {
-              "type": "number",
-              "title": "标称值 (mm)",
-              "default": 50.0
-            },
-            "upperTolerance": {
-              "type": "number",
-              "title": "上偏差 (mm)",
-              "default": 0.05
-            },
-            "lowerTolerance": {
-              "type": "number",
-              "title": "下偏差 (mm)",
-              "default": -0.05
-            },
-            "unit": {
-              "type": "string",
-              "title": "单位",
-              "enum": ["mm", "cm", "inch", "px"],
-              "default": "mm"
+          "items": {
+            "type": "object",
+            "title": "规则",
+            "properties": {
+              "nominalValue": {
+                "type": "number",
+                "title": "理论值",
+                "default": 0
+              },
+              "upperLimit": {
+                "type": "number",
+                "title": "上限",
+                "default": 0
+              },
+              "lowerLimit": {
+                "type": "number",
+                "title": "下限",
+                "default": 0
+              },
+              "unit": {
+                "type": "string",
+                "title": "单位",
+                "enum": ["mm", "cm", "inch", "px"],
+                "default": "mm"
+              }
             }
-          }
+          },
+          "default": [
+            {
+              "nominalValue": 50.0,
+              "upperLimit": 50.05,
+              "lowerLimit": 49.95,
+              "unit": "mm"
+            },
+            {
+              "nominalValue": 30.0,
+              "upperLimit": 30.03,
+              "lowerLimit": 29.97,
+              "unit": "mm"
+            }
+          ]
         },
         "result": {
           "type": "object",

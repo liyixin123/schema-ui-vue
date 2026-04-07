@@ -28,8 +28,10 @@
           <ObjectArrayInput
             :model-value="(getFieldValue(field.path) as Record<string, unknown>[])"
             :item-schema="field.itemSchema"
+            :item-title="field.itemTitle"
             :has-error="fieldErrors(field.path).length > 0"
             :label="field.label"
+            :columns="columns"
             :readonly="field.readonly"
             @update:model-value="onFieldUpdate(field.path, $event)"
           />

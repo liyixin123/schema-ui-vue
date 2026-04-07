@@ -30,7 +30,7 @@
         <FormRenderer
           :fields="itemSchema"
           :config="item"
-          :columns="1"
+          :columns="columns"
           @update="onItemUpdate(index, $event)"
         />
       </div>
@@ -55,9 +55,11 @@ const props = withDefaults(
     itemSchema?: FormFieldDescriptor[]
     hasError?: boolean
     label?: string
+    itemTitle?: string
+    columns?: number
     readonly?: boolean
   }>(),
-  { modelValue: () => [], itemSchema: () => [] },
+  { modelValue: () => [], itemSchema: () => [], columns: 1 },
 )
 
 const emit = defineEmits<{
@@ -77,14 +79,14 @@ function toggleItem(index: number): void {
 }
 
 function getItemTitle(item: Record<string, unknown>, index: number): string {
-  // Use the first string-valued field as the item title
+  // Use the first text-valued field as the item title (skip select/enum fields)
   for (const field of props.itemSchema) {
-    if (field.controlType === 'text' || field.controlType === 'select') {
+    if (field.controlType === 'text') {
       const val = item[field.key]
       if (typeof val === 'string' && val.trim()) return val
     }
   }
-  return `项目 ${index + 1}`
+  return `${props.itemTitle ?? '项目'} ${index + 1}`
 }
 
 function addItem(): void {
