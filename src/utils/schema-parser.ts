@@ -1,5 +1,6 @@
 import type { JsonSchema } from '../types/schema'
 import type { ArrayItemType, ControlType, FormFieldDescriptor } from '../types/form'
+import type { CanvasDescriptor } from '../types/canvas'
 
 function resolveControlType(schema: JsonSchema): ControlType {
   if (schema.type === 'boolean') return 'checkbox'
@@ -23,6 +24,13 @@ function resolveItemType(schema: JsonSchema): ArrayItemType | undefined {
   if (itemsType === 'object') return 'object'
   if (itemsType === 'number' || itemsType === 'integer') return 'number'
   return 'string'
+}
+
+function resolveCanvas(schema: JsonSchema): CanvasDescriptor | undefined {
+  const raw = schema['x-canvas']
+  if (!raw) return undefined
+  if (raw === true) return { type: 'pathpoint' }
+  return raw
 }
 
 function resolveOptions(schema: JsonSchema): FormFieldDescriptor['options'] {
@@ -62,6 +70,7 @@ function parseField(
     depth,
     readonly: isReadonly || undefined,
     column: schema['x-column'],
+    canvas: resolveCanvas(schema),
   }
 
   if (controlType === 'group' && schema.properties) {

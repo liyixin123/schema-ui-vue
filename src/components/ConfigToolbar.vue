@@ -31,8 +31,11 @@
       <button class="btn btn-secondary" type="button" @click="$emit('export-schema')">
         Export Schema
       </button>
+      <button class="btn btn-secondary" type="button" @click="$emit('export-result')">
+        Export Result
+      </button>
       <button class="btn btn-primary" type="button" @click="$emit('export')">
-        Export JSON
+        Export Config
       </button>
     </div>
   </div>
@@ -55,6 +58,7 @@ defineEmits<{
   reset: []
   export: []
   'export-schema': []
+  'export-result': []
   'update:columns': [value: number]
 }>()
 </script>

@@ -2,6 +2,7 @@
   <div class="form-renderer" :style="{ '--grid-cols': columns }">
     <template v-for="field in fields" :key="field.path">
       <div
+        v-if="!field.canvas"
         class="field-cell"
         :class="{ 'field-cell--full': field.controlType === 'group' || field.controlType === 'object-array' }"
       >

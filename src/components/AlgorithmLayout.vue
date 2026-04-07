@@ -70,9 +70,9 @@ const tabFields = computed(() =>
   props.fields.filter((f) => f.controlType === 'group' && f.children),
 )
 
-// depth-0 非分组字段 → 显示在标签页上方
+// depth-0 非分组字段 → 显示在标签页上方（排除画布字段）
 const preambleFields = computed(() =>
-  props.fields.filter((f) => f.controlType !== 'group'),
+  props.fields.filter((f) => f.controlType !== 'group' && !f.canvas),
 )
 
 const activeTab = ref<string>(tabFields.value[0]?.key ?? '')

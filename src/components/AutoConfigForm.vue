@@ -12,6 +12,7 @@
         @reset="handleReset"
         @export="handleExport"
         @export-schema="handleExportSchema"
+        @export-result="handleExportResult"
         @update:columns="internalColumns = $event"
       />
 
@@ -188,7 +189,16 @@ function handleReset(): void {
 
 function handleExport(): void {
   const title = effectiveSchema.value?.title ?? 'config'
-  downloadJson(displayConfig.value, `${title}.json`)
+  // 导出配置参数（表单数据 + 画布数据），排除 readonly 结果字段
+  downloadJson(stripReadonlyPaths(internalConfig.value, fields.value), `${title}-config.json`)
+}
+
+function handleExportResult(): void {
+  const title = effectiveSchema.value?.title ?? 'result'
+  // 导出算法结果（readonlyData），无 readonlyData 时跳过
+  if (props.readonlyData) {
+    downloadJson(props.readonlyData, `${title}-result.json`)
+  }
 }
 
 function handleExportSchema(): void {

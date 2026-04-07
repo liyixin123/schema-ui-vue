@@ -1,3 +1,5 @@
+import type { CanvasDescriptor } from './canvas'
+
 export type ControlType = 'text' | 'number' | 'checkbox' | 'select' | 'textarea' | 'group' | 'array' | 'object-array'
 
 export type ArrayItemType = 'string' | 'number' | 'object'
@@ -23,4 +25,5 @@ export interface FormFieldDescriptor {
   itemSchema?: FormFieldDescriptor[]
   readonly?: boolean
   column?: string
+  canvas?: CanvasDescriptor
 }

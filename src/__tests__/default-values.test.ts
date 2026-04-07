@@ -145,6 +145,37 @@ describe('buildDefaultFromDescriptors', () => {
   })
 })
 
+describe('extractDefaults with x-canvas fields', () => {
+  it('initializes x-canvas array field to empty array', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        roi: {
+          type: 'array',
+          'x-canvas': { type: 'roi', group: 'g1' },
+          items: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' } } },
+        },
+      },
+    }
+    expect(extractDefaults(schema)).toEqual({ roi: [] })
+  })
+
+  it('initializes x-canvas field with explicit default array', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        path: {
+          type: 'array',
+          'x-canvas': { type: 'pathpoint', group: 'g1' },
+          items: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' } } },
+          default: [{ x: 10, y: 20 }],
+        },
+      },
+    }
+    expect(extractDefaults(schema)).toEqual({ path: [{ x: 10, y: 20 }] })
+  })
+})
+
 describe('stripReadonlyPaths', () => {
   it('removes top-level readonly fields', () => {
     const config = { a: 1, b: 2 }

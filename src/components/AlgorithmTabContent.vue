@@ -99,7 +99,7 @@ const groupChildren = computed(() =>
 
 const nonGroupChildren = computed(() =>
   (props.field.children ?? []).filter(
-    (c) => c.controlType !== 'group',
+    (c) => c.controlType !== 'group' && !c.canvas,
   ),
 )
 

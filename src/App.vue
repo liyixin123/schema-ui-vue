@@ -65,14 +65,6 @@ const mockResults: Record<string, unknown> = {
     width: {
         result: { measuredValue: 50.12, deviation: 0.12, verdict: "不合格" },
     },
-    roundness: {
-        result: {
-            roundnessError: 0.015,
-            centerX: 320.5,
-            centerY: 240.2,
-            verdict: "合格",
-        },
-    },
 };
 
 const readonlyData = computed(() =>

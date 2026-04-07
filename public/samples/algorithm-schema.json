@@ -18,84 +18,52 @@
               "title": "启用",
               "default": true
             },
-            "roiX": {
-              "type": "integer",
-              "title": "ROI X",
-              "minimum": 0,
-              "default": 0
-            },
-            "roiY": {
-              "type": "integer",
-              "title": "ROI Y",
-              "minimum": 0,
-              "default": 0
-            },
-            "roiWidth": {
-              "type": "integer",
-              "title": "ROI 宽",
-              "minimum": 1,
-              "default": 640
-            },
-            "roiHeight": {
-              "type": "integer",
-              "title": "ROI 高",
-              "minimum": 1,
-              "default": 480
-            },
             "label": {
               "type": "string",
-              "title": "标签 (text)",
+              "title": "标签",
               "description": "自定义标签，用于标注该测量项",
               "default": "测量项A"
             },
             "remark": {
               "type": "string",
-              "title": "备注 (textarea)",
+              "title": "备注",
               "format": "textarea",
               "description": "详细备注，支持多行文本",
               "default": ""
             },
             "excludeAngles": {
               "type": "array",
-              "title": "排除角度 (array<number>)",
+              "title": "排除角度",
               "description": "检测时需跳过的角度（°）",
               "items": {
                 "type": "number"
               },
               "default": []
             },
-            "tags": {
+            "calibrationPath": {
               "type": "array",
-              "title": "标签列表 (array<string>)",
-              "description": "用于分类和过滤的标签集合",
-              "items": {
-                "type": "string"
-              },
-              "default": []
-            },
-            "calibrationPoints": {
-              "type": "array",
-              "title": "标定点 (object-array)",
-              "description": "用于标定的参考点坐标集合",
+              "title": "标定路点",
+              "description": "在图像上绘制，相邻点依次连接形成标定折线",
+              "x-canvas": { "type": "pathpoint", "group": "length_calibration" },
               "items": {
                 "type": "object",
                 "properties": {
-                  "name": {
-                    "type": "string",
-                    "title": "点名称"
-                  },
-                  "x": {
-                    "type": "number",
-                    "title": "X 坐标 (px)"
-                  },
-                  "y": {
-                    "type": "number",
-                    "title": "Y 坐标 (px)"
-                  },
-                  "weight": {
-                    "type": "number",
-                    "title": "权重"
-                  }
+                  "x": { "type": "number" },
+                  "y": { "type": "number" }
+                }
+              },
+              "default": []
+            },
+            "detectionRoi": {
+              "type": "array",
+              "title": "检测区域",
+              "description": "在图像上绘制 ROI 多边形，框定检测范围",
+              "x-canvas": { "type": "roi", "group": "length_roi" },
+              "items": {
+                "type": "object",
+                "properties": {
+                  "x": { "type": "number" },
+                  "y": { "type": "number" }
                 }
               },
               "default": []
@@ -194,29 +162,19 @@
               "title": "启用",
               "default": true
             },
-            "roiX": {
-              "type": "integer",
-              "title": "ROI X",
-              "minimum": 0,
-              "default": 0
-            },
-            "roiY": {
-              "type": "integer",
-              "title": "ROI Y",
-              "minimum": 0,
-              "default": 0
-            },
-            "roiWidth": {
-              "type": "integer",
-              "title": "ROI 宽",
-              "minimum": 1,
-              "default": 640
-            },
-            "roiHeight": {
-              "type": "integer",
-              "title": "ROI 高",
-              "minimum": 1,
-              "default": 480
+            "detectionRoi": {
+              "type": "array",
+              "title": "检测区域",
+              "description": "在图像上绘制 ROI 多边形，框定宽度检测范围",
+              "x-canvas": { "type": "roi", "group": "width_roi" },
+              "items": {
+                "type": "object",
+                "properties": {
+                  "x": { "type": "number" },
+                  "y": { "type": "number" }
+                }
+              },
+              "default": []
             },
             "advancedSettings": {
               "type": "object",
@@ -287,86 +245,6 @@
             "deviation": {
               "type": "number",
               "title": "偏差 (mm)"
-            },
-            "verdict": {
-              "type": "string",
-              "title": "判定结果",
-              "enum": ["合格", "不合格", "待检测"],
-              "default": "待检测"
-            }
-          }
-        }
-      }
-    },
-    "roundness": {
-      "type": "object",
-      "title": "圆度",
-      "properties": {
-        "detection": {
-          "type": "object",
-          "title": "检测参数",
-          "x-column": "detection",
-          "properties": {
-            "enabled": {
-              "type": "boolean",
-              "title": "启用",
-              "default": false
-            },
-            "minRadius": {
-              "type": "number",
-              "title": "最小半径 (px)",
-              "minimum": 1,
-              "default": 10
-            },
-            "maxRadius": {
-              "type": "number",
-              "title": "最大半径 (px)",
-              "minimum": 1,
-              "default": 200
-            },
-            "fitMethod": {
-              "type": "string",
-              "title": "拟合方法",
-              "enum": ["最小二乘法", "最大内切圆", "最小外接圆"],
-              "default": "最小二乘法"
-            }
-          }
-        },
-        "quality": {
-          "type": "object",
-          "title": "质检参数",
-          "x-column": "quality",
-          "properties": {
-            "maxRoundnessError": {
-              "type": "number",
-              "title": "最大圆度误差 (mm)",
-              "default": 0.02
-            },
-            "unit": {
-              "type": "string",
-              "title": "单位",
-              "enum": ["mm", "μm"],
-              "default": "mm"
-            }
-          }
-        },
-        "result": {
-          "type": "object",
-          "title": "结果显示",
-          "x-column": "result",
-          "x-readonly": true,
-          "properties": {
-            "roundnessError": {
-              "type": "number",
-              "title": "圆度误差 (mm)"
-            },
-            "centerX": {
-              "type": "number",
-              "title": "圆心 X (px)"
-            },
-            "centerY": {
-              "type": "number",
-              "title": "圆心 Y (px)"
             },
             "verdict": {
               "type": "string",

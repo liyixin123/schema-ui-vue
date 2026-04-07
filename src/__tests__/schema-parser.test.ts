@@ -298,4 +298,56 @@ describe('parseSchema', () => {
     const fields = parseSchema(schema)
     expect(fields[0].readonly).toBeUndefined()
   })
+
+  it('parses x-canvas object descriptor', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        roi: {
+          type: 'array',
+          'x-canvas': { type: 'roi', group: 'main_roi' },
+          items: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' } } },
+        },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].canvas).toEqual({ type: 'roi', group: 'main_roi' })
+  })
+
+  it('parses x-canvas pathpoint descriptor', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        path: {
+          type: 'array',
+          'x-canvas': { type: 'pathpoint', group: 'calib_1' },
+          items: { type: 'object', properties: { x: { type: 'number' }, y: { type: 'number' } } },
+        },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].canvas).toEqual({ type: 'pathpoint', group: 'calib_1' })
+  })
+
+  it('parses x-canvas: true as pathpoint shorthand', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        points: { type: 'array', 'x-canvas': true, items: { type: 'object', properties: {} } },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].canvas).toEqual({ type: 'pathpoint' })
+  })
+
+  it('canvas field has no canvas descriptor when x-canvas is absent', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        tags: { type: 'array', items: { type: 'string' } },
+      },
+    }
+    const fields = parseSchema(schema)
+    expect(fields[0].canvas).toBeUndefined()
+  })
 })

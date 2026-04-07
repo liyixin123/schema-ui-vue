@@ -1,3 +1,5 @@
+import type { CanvasDescriptor } from './canvas'
+
 export type JsonSchemaType = 'string' | 'number' | 'integer' | 'boolean' | 'object' | 'array' | 'null'
 
 export interface JsonSchema {
@@ -19,4 +21,5 @@ export interface JsonSchema {
   additionalProperties?: boolean | JsonSchema
   'x-readonly'?: boolean
   'x-column'?: string
+  'x-canvas'?: CanvasDescriptor | boolean
 }

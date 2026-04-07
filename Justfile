@@ -1,6 +1,9 @@
 # schema-ui-vue release automation
 # Usage: just release 0.1.2
 
+set windows-shell := ["pwsh", "-NoLogo", "-Command"]
+
+
 # Show available commands
 default:
     @just --list
