@@ -8,9 +8,7 @@
             <div class="demo-header-right">
                 <button
                     class="demo-mode-btn"
-                    :class="{
-                        'demo-mode-btn--active': layoutMode === 'default',
-                    }"
+                    :class="{ 'demo-mode-btn--active': layoutMode === 'default' }"
                     type="button"
                     @click="setMode('default')"
                 >
@@ -18,9 +16,7 @@
                 </button>
                 <button
                     class="demo-mode-btn"
-                    :class="{
-                        'demo-mode-btn--active': layoutMode === 'algorithm',
-                    }"
+                    :class="{ 'demo-mode-btn--active': layoutMode === 'algorithm' }"
                     type="button"
                     @click="setMode('algorithm')"
                 >
@@ -30,8 +26,16 @@
         </header>
 
         <main class="demo-main">
+            <!-- Canvas panel: only shown when schema has canvas fields -->
+            <CanvasPreview
+                v-if="canvasFields.length > 0"
+                :canvas-fields="canvasFields"
+                :config="config"
+                @update="handleCanvasUpdate"
+            />
+
             <AutoConfigForm
-                :schema-url="schemaUrl"
+                :schema="schema ?? undefined"
                 v-model="config"
                 :show-toolbar="true"
                 :show-preview="layoutMode === 'default'"
@@ -44,18 +48,58 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { AutoConfigForm } from "schema-ui-vue";
-import type { LayoutMode } from "schema-ui-vue";
+import { ref, computed, watch } from "vue";
+import { AutoConfigForm, parseSchema, extractCanvasFields } from "schema-ui-vue";
+import type { LayoutMode, JsonSchema, FormFieldDescriptor } from "schema-ui-vue";
+import CanvasPreview from "./CanvasPreview.vue";
 
 const layoutMode = ref<LayoutMode>("algorithm");
 const config = ref<Record<string, unknown>>({});
+const schema = ref<JsonSchema | null>(null);
 
 const schemaUrl = computed(() =>
     layoutMode.value === "algorithm"
         ? "/samples/algorithm-schema.json"
         : "/samples/example-schema.json",
 );
+
+// Fetch schema in app layer so canvas fields can be derived here
+watch(schemaUrl, async (url) => {
+    schema.value = null;
+    config.value = {};
+    try {
+        const res = await fetch(url);
+        schema.value = (await res.json()) as JsonSchema;
+    } catch {
+        // AutoConfigForm will show its own error
+    }
+}, { immediate: true });
+
+const canvasFields = computed<FormFieldDescriptor[]>(() =>
+    schema.value ? extractCanvasFields(parseSchema(schema.value)) : [],
+);
+
+// Nested value setter (immutable) for canvas updates
+function setNested(
+    obj: Record<string, unknown>,
+    path: string,
+    value: unknown,
+): Record<string, unknown> {
+    const [head, ...rest] = path.split(".");
+    if (rest.length === 0) return { ...obj, [head]: value };
+    return {
+        ...obj,
+        [head]: setNested(
+            ((obj[head] as Record<string, unknown>) ?? {}),
+            rest.join("."),
+            value,
+        ),
+    };
+}
+
+function handleCanvasUpdate(payload: { path: string; value: unknown }) {
+    config.value = setNested(config.value, payload.path, payload.value);
+}
 
 // 模拟算法计算结果（实际应用中由外部 API 提供）
 const mockResults: Record<string, unknown> = {
@@ -113,6 +157,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    flex-shrink: 0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -141,10 +186,7 @@ body {
     background: transparent;
     color: #4a5568;
     cursor: pointer;
-    transition:
-        background 0.15s,
-        color 0.15s,
-        border-color 0.15s;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .demo-mode-btn:hover {
@@ -200,18 +242,18 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
 }
 
 /* Make AutoConfigForm fill the available height in demo */
 .demo-main .acf-root {
     flex: 1;
     overflow: hidden;
+    min-width: 0;
 }
 
 .demo-main .acf-body--split {
-    height: calc(
-        100vh - 57px - 49px
-    ); /* full height minus header and toolbar */
+    height: calc(100vh - 57px - 49px);
 }
 
 .demo-main .acf-form {
