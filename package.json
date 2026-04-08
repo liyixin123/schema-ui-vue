@@ -48,6 +48,8 @@
     "vue": "^3.3.0"
   },
   "dependencies": {
+    "@tauri-apps/plugin-dialog": "^2.7.0",
+    "@tauri-apps/plugin-fs": "^2.5.0",
     "ajv": "^8.18.0",
     "ajv-formats": "^3.0.1",
     "vue": "^3.5.30"

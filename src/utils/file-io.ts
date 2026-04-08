@@ -26,13 +26,31 @@ export function readJsonFile(file: File): Promise<JsonSchema> {
   })
 }
 
-export function downloadJson(data: unknown, filename: string): void {
+export function isTauri(): boolean {
+  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
+}
+
+export async function downloadJson(data: unknown, filename: string): Promise<void> {
   const json = JSON.stringify(data, null, 2)
-  const blob = new Blob([json], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename.endsWith('.json') ? filename : `${filename}.json`
-  anchor.click()
-  URL.revokeObjectURL(url)
+  const safeFilename = filename.endsWith('.json') ? filename : `${filename}.json`
+
+  if (isTauri()) {
+    const { save } = await import(/* @vite-ignore */ '@tauri-apps/plugin-dialog')
+    const { writeTextFile } = await import(/* @vite-ignore */ '@tauri-apps/plugin-fs')
+    const path = await save({
+      defaultPath: safeFilename,
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+    })
+    if (path) {
+      await writeTextFile(path, json)
+    }
+  } else {
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = safeFilename
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }
 }

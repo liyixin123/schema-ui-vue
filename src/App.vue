@@ -52,24 +52,35 @@ import { ref, computed, watch } from "vue";
 import { AutoConfigForm, parseSchema, extractCanvasFields } from "schema-ui-vue";
 import type { LayoutMode, JsonSchema, FormFieldDescriptor } from "schema-ui-vue";
 import CanvasPreview from "./CanvasPreview.vue";
+import { isTauri } from "./utils/file-io";
 
 const layoutMode = ref<LayoutMode>("algorithm");
 const config = ref<Record<string, unknown>>({});
 const schema = ref<JsonSchema | null>(null);
 
-const schemaUrl = computed(() =>
+const schemaFilename = computed(() =>
     layoutMode.value === "algorithm"
-        ? "/samples/algorithm-schema.json"
-        : "/samples/example-schema.json",
+        ? "algorithm-schema.json"
+        : "example-schema.json",
 );
 
-// Fetch schema in app layer so canvas fields can be derived here
-watch(schemaUrl, async (url) => {
+async function loadSchema(filename: string): Promise<JsonSchema> {
+    if (isTauri()) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const text = await (window as any).__TAURI_INTERNALS__.invoke("read_schema", { filename }) as string;
+        return JSON.parse(text) as JsonSchema;
+    } else {
+        const res = await fetch(`/samples/${filename}`);
+        return res.json() as Promise<JsonSchema>;
+    }
+}
+
+// Load schema in app layer so canvas fields can be derived here
+watch(schemaFilename, async (filename) => {
     schema.value = null;
     config.value = {};
     try {
-        const res = await fetch(url);
-        schema.value = (await res.json()) as JsonSchema;
+        schema.value = await loadSchema(filename);
     } catch {
         // AutoConfigForm will show its own error
     }

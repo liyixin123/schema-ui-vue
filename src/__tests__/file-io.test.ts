@@ -45,7 +45,7 @@ describe('readJsonFile', () => {
 // ── downloadJson ──────────────────────────────────────────────
 
 describe('downloadJson', () => {
-  it('creates an anchor element and triggers a click', () => {
+  it('creates an anchor element and triggers a click', async () => {
     const createObjectURL = vi.fn().mockReturnValue('blob:fake')
     const revokeObjectURL = vi.fn()
     vi.stubGlobal('URL', { createObjectURL, revokeObjectURL })
@@ -60,7 +60,7 @@ describe('downloadJson', () => {
       return el
     })
 
-    downloadJson({ key: 'value' }, 'output')
+    await downloadJson({ key: 'value' }, 'output')
     expect(createObjectURL).toHaveBeenCalled()
     expect(clicks).toContain('clicked')
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:fake')
@@ -68,7 +68,7 @@ describe('downloadJson', () => {
     vi.restoreAllMocks()
   })
 
-  it('appends .json extension if missing', () => {
+  it('appends .json extension if missing', async () => {
     const createObjectURL = vi.fn().mockReturnValue('blob:x')
     const revokeObjectURL = vi.fn()
     vi.stubGlobal('URL', { createObjectURL, revokeObjectURL })
@@ -85,13 +85,13 @@ describe('downloadJson', () => {
       return el
     })
 
-    downloadJson({}, 'myfile')
+    await downloadJson({}, 'myfile')
     expect(downloadAttr).toBe('myfile.json')
 
     vi.restoreAllMocks()
   })
 
-  it('does not double-append .json if already present', () => {
+  it('does not double-append .json if already present', async () => {
     const createObjectURL = vi.fn().mockReturnValue('blob:x')
     const revokeObjectURL = vi.fn()
     vi.stubGlobal('URL', { createObjectURL, revokeObjectURL })
@@ -108,7 +108,7 @@ describe('downloadJson', () => {
       return el
     })
 
-    downloadJson({}, 'config.json')
+    await downloadJson({}, 'config.json')
     expect(downloadAttr).toBe('config.json')
 
     vi.restoreAllMocks()

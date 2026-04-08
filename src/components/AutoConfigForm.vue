@@ -187,24 +187,24 @@ function handleReset(): void {
   }
 }
 
-function handleExport(): void {
+async function handleExport(): Promise<void> {
   const title = effectiveSchema.value?.title ?? 'config'
   // 导出配置参数（表单数据 + 画布数据），排除 readonly 结果字段
-  downloadJson(stripReadonlyPaths(internalConfig.value, fields.value), `${title}-config.json`)
+  await downloadJson(stripReadonlyPaths(internalConfig.value, fields.value), `${title}-config.json`)
 }
 
-function handleExportResult(): void {
+async function handleExportResult(): Promise<void> {
   const title = effectiveSchema.value?.title ?? 'result'
   // 导出算法结果（readonlyData），无 readonlyData 时跳过
   if (props.readonlyData) {
-    downloadJson(props.readonlyData, `${title}-result.json`)
+    await downloadJson(props.readonlyData, `${title}-result.json`)
   }
 }
 
-function handleExportSchema(): void {
+async function handleExportSchema(): Promise<void> {
   if (!effectiveSchema.value) return
   const title = effectiveSchema.value.title ?? 'schema'
-  downloadJson(effectiveSchema.value, `${title}-schema.json`)
+  await downloadJson(effectiveSchema.value, `${title}-schema.json`)
 }
 
 // ── Exposed methods ───────────────────────────────────────────
